@@ -2,6 +2,7 @@ package com.juvenxu.portableconfig;
 
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -13,16 +14,26 @@ import java.util.Properties;
  */
 public class DefaultPortableConfigEngineTest
 {
+
+  private PortableConfigEngine sut;
+
+  @Before
+  public void setup()
+  {
+    URL targetDirectory = this.getClass().getResource("/to_be_replaced");
+    sut = new DefaultPortableConfigEngine(targetDirectory);
+  }
+
+  @Test(expected = PortableConfigException.class)
+  public void GIVEN_portable_config_file_path_does_not_exist_WHEN_run_engine_THEN_should_get_exception() throws Exception
+  {
+    applyPortableConfigXml("path_does_not_exist.xml");
+  }
+
   @Test
   public void GIVEN_portable_config_replacing_property_WHEN_run_engine_THEN_property_should_be_replaced() throws Exception
   {
-    URL targetDirectory = this.getClass().getResource("/to_be_replaced");
-
-    PortableConfigEngine sut = new DefaultPortableConfigEngine(targetDirectory);
-
-    InputStream portableConfigFile = this.getClass().getResourceAsStream("/portable_config/replace_property.xml");
-
-    sut.apply(portableConfigFile);
+    applyPortableConfigXml("replace_property.xml");
 
     Properties result = new Properties();
     result.load(this.getClass().getResourceAsStream("/to_be_replaced/db.properties"));
@@ -31,4 +42,9 @@ public class DefaultPortableConfigEngineTest
     Assert.assertEquals("test", result.getProperty("mysql.password"));
   }
 
+  private void applyPortableConfigXml(String configXml) throws PortableConfigException
+  {
+    InputStream portableConfigFile = this.getClass().getResourceAsStream("/portable_config/" + configXml);
+    sut.apply(portableConfigFile);
+  }
 }

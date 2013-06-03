@@ -1,0 +1,20 @@
+<portable-config>
+    <config-file>
+        <path>db.properties</path>
+        <replaces>
+            <replace>
+                <key>mysql.host</key>
+                <value>192.168.1.100</value>
+            </replace>
+        </replaces>
+    </config-file>
+    <config-file>
+        <path>server.properties</path>
+        <replaces>
+            <replace>
+                <key>server.port</key>
+                <value>80</value>
+            </replace>
+        </replaces>
+    </config-file>
+</portable-config>

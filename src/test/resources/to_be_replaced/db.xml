@@ -1,0 +1,7 @@
+<db>
+    <mysql>
+        <host>localhost</host>
+        <username>test</username>
+        <password>test</password>
+    </mysql>
+</db>

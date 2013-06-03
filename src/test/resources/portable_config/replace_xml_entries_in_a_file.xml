@@ -1,0 +1,15 @@
+<portable-config>
+    <config-file>
+        <path>db.xml</path>
+        <replaces>
+            <replace>
+                <key>/db/mysql/host</key>
+                <value>192.168.1.100</value>
+            </replace>
+            <replace>
+                <key>/db/mysql/username</key>
+                <value>juven</value>
+            </replace>
+        </replaces>
+    </config-file>
+</portable-config>

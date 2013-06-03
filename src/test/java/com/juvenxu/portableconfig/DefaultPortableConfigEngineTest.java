@@ -1,6 +1,12 @@
 package com.juvenxu.portableconfig;
 
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +14,10 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
+
+import static org.junit.Assert.*;
 
 /**
  * @author juven
@@ -32,14 +41,14 @@ public class DefaultPortableConfigEngineTest
   }
 
   @Test
-  public void GIVEN_portable_config_replacing_properties_in_a_file_WHEN_run_engine_THEN_all_properties_should_be_replaced() throws Exception
+  public void GIVEN_portable_config_replacing_properties_in_a_file_WHEN_run_engine_THEN_properties_should_be_replaced() throws Exception
   {
     applyPortableConfigXml("replace_properties_in_a_file.xml");
 
     Properties result = getResultProperties("db.properties");
-    Assert.assertEquals("192.168.1.100", result.getProperty("mysql.host"));
-    Assert.assertEquals("juven", result.getProperty("mysql.username"));
-    Assert.assertEquals("test", result.getProperty("mysql.password"));
+    assertEquals("192.168.1.100", result.getProperty("mysql.host"));
+    assertEquals("juven", result.getProperty("mysql.username"));
+    assertEquals("test", result.getProperty("mysql.password"));
   }
 
   @Test
@@ -48,10 +57,32 @@ public class DefaultPortableConfigEngineTest
     applyPortableConfigXml("replace_two_properties_files.xml");
 
     Properties dbProperties = getResultProperties("db.properties");
-    Assert.assertEquals("192.168.1.100", dbProperties.getProperty("mysql.host"));
+    assertEquals("192.168.1.100", dbProperties.getProperty("mysql.host"));
 
     Properties serverProperties = getResultProperties("server.properties");
-    Assert.assertEquals("80", serverProperties.getProperty("server.port"));
+    assertEquals("80", serverProperties.getProperty("server.port"));
+  }
+
+  @Test
+  public void GIVEN_portable_config_replacing_xml_entries_in_a_file_WHEN_run_engine_THEN_entries_should_be_replaced() throws Exception
+  {
+    applyPortableConfigXml("replace_xml_entries_in_a_file.xml");
+
+    assertEquals("192.168.1.100", getResultXmlEntry("db.xml", "/db/mysql/host"));
+    assertEquals("juven", getResultXmlEntry("db.xml", "/db/mysql/username"));
+  }
+
+  private String getResultXmlEntry(String xmlFile, String xpath) throws JDOMException, IOException
+  {
+    SAXBuilder saxBuilder = new SAXBuilder();
+
+    Document doc = saxBuilder.build(this.getClass().getResourceAsStream("/to_be_replaced/" + xmlFile));
+
+    XPathFactory xPathFactory = XPathFactory.instance();
+    XPathExpression xPathExpression = xPathFactory.compile(xpath);
+    List<Element> elements =  xPathExpression.evaluate(doc);
+
+    return elements.get(0).getValue();
   }
 
   private void applyPortableConfigXml(String configXml) throws PortableConfigException

@@ -27,6 +27,8 @@ public class DefaultPortableConfigEngineTest
     Properties result = new Properties();
     result.load(this.getClass().getResourceAsStream("/to_be_replaced/db.properties"));
     Assert.assertEquals("192.168.1.100", result.getProperty("mysql.host"));
+    Assert.assertEquals("juven", result.getProperty("mysql.username"));
+    Assert.assertEquals("test", result.getProperty("mysql.password"));
   }
 
 }

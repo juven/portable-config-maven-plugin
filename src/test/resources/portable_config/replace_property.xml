@@ -1,6 +1,6 @@
 <portable-config>
     <config-file>
-        <file>db.properties</file>
+        <path>db.properties</path>
         <replaces>
             <replace>
                 <key>mysql.host</key>

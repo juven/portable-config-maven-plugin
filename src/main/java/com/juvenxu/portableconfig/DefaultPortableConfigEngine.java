@@ -1,7 +1,13 @@
 package com.juvenxu.portableconfig;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+
 import java.io.*;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -18,12 +24,28 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   }
 
   @Override
-  public void apply(InputStream portableConfigFile)
+  public void apply(InputStream portableConfigFile) throws PortableConfigException
   {
+    PortableConfig portableConfig = buildPortableConfigFromXml(portableConfigFile);
+
+    for (ConfigFile configFile : portableConfig.getConfigFiles())
+    {
+      File file = new File(targetDirectory.getFile(), configFile.getPath());
+
+      replaceProperties(file, configFile.getReplaces());
+    }
+
+  }
+
+  private void replaceProperties(File file, List<Replace> replaces) throws PortableConfigException
+  {
+
+    if (!file.exists() || file.isDirectory())
+    {
+      throw new PortableConfigException(String.format("File %s does not exist or is a directory.", file));
+    }
+
     Properties properties = new Properties();
-
-    File file = new File(targetDirectory.getFile(), "db.properties");
-
 
     InputStream is = null;
 
@@ -52,8 +74,13 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
       }
     }
 
-
-    properties.setProperty("mysql.host", "192.168.1.100");
+    for (Replace replace : replaces)
+    {
+      if (properties.containsKey(replace.getKey()))
+      {
+        properties.setProperty(replace.getKey(), replace.getValue());
+      }
+    }
 
     OutputStream os = null;
 
@@ -80,7 +107,47 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
         }
       }
     }
+  }
+
+  private PortableConfig buildPortableConfigFromXml(InputStream portableConfigFile)
+  {
+    PortableConfig result = new PortableConfig();
+
+    SAXBuilder saxBuilder = new SAXBuilder();
+
+    try
+    {
+      Document xmlDoc = saxBuilder.build(portableConfigFile);
+
+      Element rootElement = xmlDoc.getRootElement();
+
+      for (Element configFileElement : rootElement.getChildren())
+      {
+        ConfigFile configFile = new ConfigFile();
+
+        configFile.setPath(configFileElement.getChild("path").getValue());
+
+        for (Element replaceElement : configFileElement.getChild("replaces").getChildren())
+        {
+          Replace replace = new Replace();
+          replace.setKey(replaceElement.getChild("key").getValue());
+          replace.setValue(replaceElement.getChild("value").getValue());
+
+          configFile.getReplaces().add(replace);
+        }
+
+        result.getConfigFiles().add(configFile);
+      }
 
 
+    } catch (JDOMException e)
+    {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    } catch (IOException e)
+    {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+
+    return result;
   }
 }

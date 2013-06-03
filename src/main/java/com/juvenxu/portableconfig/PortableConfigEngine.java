@@ -8,5 +8,5 @@ import java.io.InputStream;
  */
 public interface PortableConfigEngine
 {
-  public void apply(InputStream portableConfigFile);
+  public void apply(InputStream portableConfigFile) throws PortableConfigException;
 }

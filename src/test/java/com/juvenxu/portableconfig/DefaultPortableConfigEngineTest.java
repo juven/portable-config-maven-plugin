@@ -7,7 +7,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +16,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author juven
@@ -70,6 +69,23 @@ public class DefaultPortableConfigEngineTest
 
     assertEquals("192.168.1.100", getResultXmlEntry("db.xml", "/db/mysql/host"));
     assertEquals("juven", getResultXmlEntry("db.xml", "/db/mysql/username"));
+  }
+
+  @Test
+  public void GIVEN_portable_config_replacing_two_xml_files_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
+  {
+    applyPortableConfigXml("replace_two_xml_files.xml");
+    assertEquals("192.168.1.100", getResultXmlEntry("db.xml", "/db/mysql/host"));
+    assertEquals("80", getResultXmlEntry("server.xml", "/server/port"));
+  }
+
+  @Test
+  public void GIVEN_portable_config_replacing_properties_file_and_xml_file_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
+  {
+    applyPortableConfigXml("replace_properties_file_and_xml_file.xml");
+
+    assertEquals("192.168.1.100", getResultProperties("db.properties").getProperty("mysql.host"));
+    assertEquals("80", getResultXmlEntry("server.xml", "/server/port"));
   }
 
   private String getResultXmlEntry(String xmlFile, String xpath) throws JDOMException, IOException

@@ -22,15 +22,19 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 
   private final URL targetDirectory;
 
+  private PortableConfigBuilder portableConfigBuilder;
+
   public DefaultPortableConfigEngine(URL targetDirectory)
   {
     this.targetDirectory = targetDirectory;
+
+    this.portableConfigBuilder = new DefaultPortableConfigBuilder();
   }
 
   @Override
   public void apply(InputStream portableConfigFile) throws PortableConfigException
   {
-    PortableConfig portableConfig = buildPortableConfigFromXml(portableConfigFile);
+    PortableConfig portableConfig = portableConfigBuilder.build(portableConfigFile);
 
     for (ConfigFile configFile : portableConfig.getConfigFiles())
     {
@@ -82,7 +86,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 
       XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 
-      xmlOutputter.output(doc, fileOutputStream );
+      xmlOutputter.output(doc, fileOutputStream);
 
     } catch (JDOMException e)
     {
@@ -167,45 +171,4 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
     }
   }
 
-  private PortableConfig buildPortableConfigFromXml(InputStream portableConfigFile)
-  {
-    PortableConfig result = new PortableConfig();
-
-    SAXBuilder saxBuilder = new SAXBuilder();
-
-    try
-    {
-      Document xmlDoc = saxBuilder.build(portableConfigFile);
-
-      Element rootElement = xmlDoc.getRootElement();
-
-      for (Element configFileElement : rootElement.getChildren())
-      {
-        ConfigFile configFile = new ConfigFile();
-
-        configFile.setPath(configFileElement.getChild("path").getValue());
-
-        for (Element replaceElement : configFileElement.getChild("replaces").getChildren())
-        {
-          Replace replace = new Replace();
-          replace.setKey(replaceElement.getChild("key").getValue());
-          replace.setValue(replaceElement.getChild("value").getValue());
-
-          configFile.getReplaces().add(replace);
-        }
-
-        result.getConfigFiles().add(configFile);
-      }
-
-
-    } catch (JDOMException e)
-    {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    } catch (IOException e)
-    {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
-
-    return result;
-  }
 }

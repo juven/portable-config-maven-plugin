@@ -1,5 +1,6 @@
 package com.juvenxu.portableconfig;
 
+import org.apache.maven.plugin.logging.Log;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -24,9 +25,14 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 
   private PortableConfigBuilder portableConfigBuilder;
 
-  public DefaultPortableConfigEngine(URL targetDirectory)
+  //TODO I don't want to bring in any maven stuff here, so should clean it in the future
+  private Log log;
+
+  public DefaultPortableConfigEngine(URL targetDirectory, Log log)
   {
     this.targetDirectory = targetDirectory;
+
+    this.log = log;
 
     this.portableConfigBuilder = new DefaultPortableConfigBuilder();
   }
@@ -40,15 +46,26 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
     {
       File file = new File(targetDirectory.getFile(), configFile.getPath());
 
+      if (!file.exists() || file.isDirectory())
+      {
+        log.warn(String.format("File %s does not exist or is a directory.", file.getPath()));
+
+        break;
+      }
+
       if (configFile.getPath().endsWith(".properties"))
       {
+        log.info(String.format("Replacing file: %s", file.getPath()));
         replaceProperties(file, configFile.getReplaces());
-      } else if (configFile.getPath().endsWith(".xml"))
+      }
+      else if (configFile.getPath().endsWith(".xml"))
       {
+        log.info(String.format("Replacing file: %s", file.getPath()));
         replaceXml(file, configFile.getReplaces());
-      } else
+      }
+      else
       {
-        throw new PortableConfigException("Only .properties and .xml config file are supported.");
+        log.warn(String.format("Ignoring file: %s, only .properties and .xml files are supported.", file.getPath()));
       }
     }
 

@@ -103,4 +103,15 @@
         </pluginManagement>
     </build>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>tmpSnapshots</id>
+            <url>http://10.12.136.115:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>tmpReleases</id>
+            <url>http://10.12.136.115:8081/nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
+
 </project>

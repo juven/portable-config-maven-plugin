@@ -7,6 +7,7 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import javax.activation.FileDataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,7 +20,7 @@ import java.net.MalformedURLException;
         name = "replace",
         defaultPhase = LifecyclePhase.PREPARE_PACKAGE
 )
-public class PortableConfigMojo extends AbstractMojo
+public class PortableConfigReplaceMojo extends AbstractMojo
 {
 
   @Parameter(readonly = true, defaultValue = "${project.build.outputDirectory}")
@@ -31,24 +32,13 @@ public class PortableConfigMojo extends AbstractMojo
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException
   {
-    try
-    {
-      PortableConfigEngine portableConfigEngine = new DefaultPortableConfigEngine( outputDirectory.toURI().toURL(), getLog());
 
-      portableConfigEngine.apply(new FileInputStream(portableConfig));
-    }
-    catch (FileNotFoundException e)
-    {
-      throw new MojoExecutionException( String.format("File %s does not exist.", portableConfig.getAbsolutePath()), e);
-    }
-    catch (PortableConfigException e)
-    {
-      throw new MojoFailureException("portable config", e);
-    }
-    catch (MalformedURLException e)
-    {
-      throw new MojoExecutionException( String.format("File %s does not exist.", outputDirectory.getAbsolutePath()), e);
-    }
+
+      PortableConfigEngine portableConfigEngine = new DefaultPortableConfigEngine(
+              getLog());
+
+      portableConfigEngine.replaceDirectory(new FileDataSource(portableConfig), outputDirectory);
+
 
 
   }

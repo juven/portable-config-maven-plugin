@@ -1,0 +1,20 @@
+<portable-config>
+    <config-file>
+        <path>WEB-INF/web.xml</path>
+        <replaces>
+            <replace>
+                <key>/web-app/display-name</key>
+                <value>yup replaced</value>
+            </replace>
+        </replaces>
+    </config-file>
+    <config-file>
+        <path>WEB-INF/classes/db.properties</path>
+        <replaces>
+            <replace>
+                <key>mysql.password</key>
+                <value>yup replaced</value>
+            </replace>
+        </replaces>
+    </config-file>
+</portable-config>

@@ -12,8 +12,12 @@ import org.jdom2.xpath.XPathFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Properties;
@@ -28,11 +32,13 @@ public class DefaultPortableConfigEngineTest
 
   private PortableConfigEngine sut;
 
+  private File targetDirectory;
+
   @Before
-  public void setup()
+  public void setup() throws Exception
   {
-    URL targetDirectory = this.getClass().getResource("/to_be_replaced");
-    sut = new DefaultPortableConfigEngine(targetDirectory, new DefaultLog( new ConsoleLogger()));
+    targetDirectory = new File(this.getClass().getResource("/to_be_replaced").toURI());
+    sut = new DefaultPortableConfigEngine(new DefaultLog( new ConsoleLogger()));
   }
 
   //@Test(expected = PortableConfigException.class)
@@ -103,10 +109,10 @@ public class DefaultPortableConfigEngineTest
     return elements.get(0).getValue();
   }
 
-  private void applyPortableConfigXml(String configXml) throws PortableConfigException
+  private void applyPortableConfigXml(String configXml) throws URISyntaxException
   {
-    InputStream portableConfigFile = this.getClass().getResourceAsStream("/portable_config/" + configXml);
-    sut.apply(portableConfigFile);
+    DataSource portableConfig = new FileDataSource( new File( this.getClass().getResource("/portable_config/" + configXml).toURI()));
+    sut.replaceDirectory(portableConfig, targetDirectory);
   }
 
   private Properties getResultProperties(String propertiesFile) throws IOException

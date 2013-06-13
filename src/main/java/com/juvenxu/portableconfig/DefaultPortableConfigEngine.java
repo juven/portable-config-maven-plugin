@@ -147,7 +147,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
           break;
         }
 
-        log.info(jarEntry.getName());
+        log.debug(jarEntry.getName());
 
 
 

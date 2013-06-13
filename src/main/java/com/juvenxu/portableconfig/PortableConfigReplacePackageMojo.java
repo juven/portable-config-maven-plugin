@@ -43,11 +43,20 @@ public class PortableConfigReplacePackageMojo extends AbstractMojo
     if (!"war".equals(packaging))
     {
       this.getLog().info(String.format("Ignoring packaging %s", packaging));
+
+      return;
     }
 
     try
     {
       PortableConfigEngine portableConfigEngine = new DefaultPortableConfigEngine(getLog());
+
+
+      if (outputDirectory.exists() && outputDirectory.isDirectory())
+      {
+        getLog().info("Replacing: " + outputDirectory.getAbsolutePath());
+        portableConfigEngine.replaceDirectory(new FileDataSource(portableConfig), outputDirectory);
+      }
 
       portableConfigEngine.replaceJar(new FileDataSource(portableConfig), finalPackage);
     }

@@ -169,14 +169,12 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
           filtered = true;
         }
 
-        if ( !filtered)
+        if (!filtered)
         {
           jarOutputStream.putNextEntry(jarEntry);
           byteArrayOutputStream.writeTo(jarOutputStream);
         }
       }
-
-
 
       IOUtils.closeQuietly(jarInputStream);
       IOUtils.closeQuietly(jarOutputStream);

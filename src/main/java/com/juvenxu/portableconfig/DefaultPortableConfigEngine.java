@@ -17,6 +17,7 @@ import org.jdom2.xpath.XPathFactory;
 
 import javax.activation.DataSource;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.JarEntry;
@@ -30,14 +31,17 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 {
   private PortableConfigBuilder portableConfigBuilder;
 
+  private List<ContentFilter> contentFilters = new ArrayList<ContentFilter>();
+
   //TODO I don't want to bring in any maven stuff here, so should clean it in the future
   private Log log;
 
   public DefaultPortableConfigEngine( Log log)
   {
     this.log = log;
-
     this.portableConfigBuilder = new DefaultPortableConfigBuilder();
+    contentFilters.add(new PropertiesContentFilter());
+    contentFilters.add(new XmlContentFilter());
   }
 
   @Override
@@ -58,59 +62,38 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
           continue;
         }
 
+        if (!hasContentFilter(configFile.getPath()))
+        {
+          log.warn(String.format("Ignore replacing: %s", file.getPath()));
+
+          continue;
+        }
+
+        log.info(String.format("Replacing file: %s", file.getPath()));
+
         File tmpTxt = File.createTempFile(Long.toString(System.nanoTime()), ".txt");
 
-        if (configFile.getPath().endsWith(".properties"))
+        ContentFilter contentFilter = getContentFilter(configFile.getPath());
+
+        InputStream inputStream = null;
+
+        OutputStream outputStream = null;
+
+        try
         {
-          log.info(String.format("Replacing file: %s", file.getPath()));
+          inputStream = new FileInputStream(file);
 
-          InputStream inputStream = null;
-          OutputStream outputStream = null;
+          outputStream = new FileOutputStream(tmpTxt);
 
-          try
-          {
-            inputStream = new FileInputStream(file);
-
-            outputStream = new FileOutputStream(tmpTxt);
-
-            filterProperties(inputStream, outputStream, configFile.getReplaces());
-          }
-          finally
-          {
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
-          }
-
-          FileUtils.copyFile(tmpTxt, file);
-
+          contentFilter.filter(inputStream, outputStream, configFile.getReplaces());
         }
-        else if (configFile.getPath().endsWith(".xml"))
+        finally
         {
-          log.info(String.format("Replacing file: %s", file.getPath()));
-
-          InputStream inputStream = null;
-          OutputStream outputStream = null;
-
-          try
-          {
-            inputStream = new FileInputStream(file);
-
-            outputStream = new FileOutputStream(tmpTxt);
-
-            filterXml(inputStream, outputStream, configFile.getReplaces());
-          } finally
-          {
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
-          }
-
-          FileUtils.copyFile(tmpTxt, file);
-        }
-        else
-        {
-          log.warn(String.format("Ignoring file: %s, only .properties and .xml files are supported.", file.getPath()));
+          IOUtils.closeQuietly(inputStream);
+          IOUtils.closeQuietly(outputStream);
         }
 
+        FileUtils.copyFile(tmpTxt, file);
       }
 
     }
@@ -118,10 +101,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
     {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
-    catch (JDOMException e)
-    {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
+
   }
 
   @Override
@@ -130,7 +110,6 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
     try
     {
       PortableConfig portableConfig = portableConfigBuilder.build(portableConfigDataSource.getInputStream());
-
 
       JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
       File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
@@ -149,8 +128,6 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 
         log.debug(jarEntry.getName());
 
-
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         while (true)
@@ -166,36 +143,40 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 
         }
 
-
         boolean filtered = false;
 
-        for ( ConfigFile configFile : portableConfig.getConfigFiles())
+        for (ConfigFile configFile : portableConfig.getConfigFiles())
         {
-          if (configFile.getPath().equals(jarEntry.getName()))
+          if (!configFile.getPath().equals(jarEntry.getName()))
           {
-            log.info(String.format("Replacing: %s!%s", jar.getName(), jarEntry.getName()));
-
-            JarEntry filteredJarEntry = new JarEntry(jarEntry.getName());
-            jarOutputStream.putNextEntry(filteredJarEntry);
-            if ( configFile.getPath().endsWith(".xml"))
-            {
-              filterXml(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
-            }
-            else if (configFile.getPath().endsWith(".properties"))
-            {
-              filterProperties(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
-            }
-
-            filtered = true;
+            continue;
           }
+
+          if (!hasContentFilter(jarEntry.getName()))
+          {
+            continue;
+          }
+
+          log.info(String.format("Replacing: %s!%s", jar.getName(), jarEntry.getName()));
+
+          JarEntry filteredJarEntry = new JarEntry(jarEntry.getName());
+          jarOutputStream.putNextEntry(filteredJarEntry);
+
+          ContentFilter contentFilter = getContentFilter(jarEntry.getName());
+
+          contentFilter.filter(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
+
+          filtered = true;
         }
 
-        if (!filtered)
+        if ( !filtered)
         {
           jarOutputStream.putNextEntry(jarEntry);
           byteArrayOutputStream.writeTo(jarOutputStream);
         }
       }
+
+
 
       IOUtils.closeQuietly(jarInputStream);
       IOUtils.closeQuietly(jarOutputStream);
@@ -203,78 +184,30 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
       log.info("Replacing: " + jar.getAbsolutePath() + " with: " + tmpJar.getAbsolutePath());
       FileUtils.copyFile(tmpJar, jar);
 
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       e.printStackTrace();
-    } catch (JDOMException e)
-    {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 
   }
 
-  private void filterProperties(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws IOException
+
+  private boolean hasContentFilter(final String contentName)
   {
-    Properties properties = new Properties();
-
-    properties.load(inputStream);
-
-    for (Replace replace : replaces)
-    {
-      if (properties.containsKey(replace.getKey()))
-      {
-        properties.setProperty(replace.getKey(), replace.getValue());
-      }
-    }
-
-    properties.store(outputStream, null);
+    return getContentFilter(contentName) != null;
   }
 
-  private void filterXml(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws JDOMException, IOException
+  private ContentFilter getContentFilter(final String contentName)
   {
-    SAXBuilder saxBuilder = new SAXBuilder();
-
-    Document doc = saxBuilder.build(inputStream);
-
-
-
-    for (Replace replace : replaces)
+    for ( ContentFilter contentFilter : contentFilters)
     {
-      XPathFactory xPathFactory = XPathFactory.instance();
-
-      XPathExpression xPathExpression = null;
-
-      String rootNamespaceURI = doc.getRootElement().getNamespaceURI();
-
-      if (StringUtils.isEmpty(rootNamespaceURI))
+      if ( contentFilter.accept(contentName))
       {
-        xPathExpression = xPathFactory.compile(replace.getKey());
-      }
-      else
-      {
-        String customizedNamespacePrefix = "portableconfig";
-        Namespace rootNamespace = Namespace.getNamespace(customizedNamespacePrefix, doc.getRootElement().getNamespaceURI());
-        String expression = replace.getKey().replace("/","/" + customizedNamespacePrefix+":");
-
-        xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, rootNamespace);
-      }
-
-      List<Element> elements = xPathExpression.evaluate(doc);
-
-      if (!elements.isEmpty())
-      {
-        log.debug("Replacing XML entry: " + replace.getKey());
-        for (Element element : elements)
-        {
-          element.setText(replace.getValue());
-        }
+        return contentFilter;
       }
     }
 
-    XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-
-    xmlOutputter.output(doc, outputStream);
+    return null;
   }
-
-
 }

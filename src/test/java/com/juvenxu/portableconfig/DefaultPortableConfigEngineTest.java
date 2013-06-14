@@ -109,7 +109,7 @@ public class DefaultPortableConfigEngineTest
     return elements.get(0).getValue();
   }
 
-  private void applyPortableConfigXml(String configXml) throws URISyntaxException
+  private void applyPortableConfigXml(String configXml) throws URISyntaxException, IOException
   {
     DataSource portableConfig = new FileDataSource( new File( this.getClass().getResource("/portable_config/" + configXml).toURI()));
     sut.replaceDirectory(portableConfig, targetDirectory);

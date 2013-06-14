@@ -60,10 +60,9 @@ public class PortableConfigReplacePackageMojo extends AbstractMojo
 
       portableConfigEngine.replaceJar(new FileDataSource(portableConfig), finalPackage);
     }
-
-    catch (Exception e)
+    catch (IOException e)
     {
-      throw new MojoExecutionException("error", e);
+      throw new MojoExecutionException("Error while replacing package", e);
     }
 
   }

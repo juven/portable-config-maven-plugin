@@ -197,9 +197,8 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
         }
       }
 
-      jarInputStream.close();
-      jarOutputStream.close();
-
+      IOUtils.closeQuietly(jarInputStream);
+      IOUtils.closeQuietly(jarOutputStream);
 
       log.info("Replacing: " + jar.getAbsolutePath() + " with: " + tmpJar.getAbsolutePath());
       FileUtils.copyFile(tmpJar, jar);

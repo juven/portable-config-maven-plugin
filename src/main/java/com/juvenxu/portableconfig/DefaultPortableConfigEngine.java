@@ -36,7 +36,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   public void replaceDirectory(DataSource portableConfigDataSource, File directory) throws IOException
   {
 
-    PortableConfig portableConfig = portableConfigBuilder.build(portableConfigDataSource.getInputStream());
+    PortableConfig portableConfig = buildPortableConfig(portableConfigDataSource);
 
     for (ConfigFile configFile : portableConfig.getConfigFiles())
     {
@@ -89,7 +89,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   public void replaceJar(DataSource portableConfigDataSource, File jar) throws IOException
   {
 
-    PortableConfig portableConfig = portableConfigBuilder.build(portableConfigDataSource.getInputStream());
+    PortableConfig portableConfig = buildPortableConfig(portableConfigDataSource);
 
     JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
     File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
@@ -163,6 +163,20 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
     FileUtils.copyFile(tmpJar, jar);
   }
 
+  private PortableConfig buildPortableConfig(DataSource portableConfigDataSource) throws IOException
+  {
+    InputStream inputStream = portableConfigDataSource.getInputStream();
+
+    try
+    {
+      return portableConfigBuilder.build(portableConfigDataSource.getInputStream());
+    }
+    finally
+    {
+      IOUtils.closeQuietly(inputStream);
+    }
+
+  }
 
   private boolean hasContentFilter(final String contentName)
   {

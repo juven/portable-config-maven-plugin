@@ -13,7 +13,7 @@ import java.io.InputStream;
  */
 public class DefaultPortableConfigBuilder implements PortableConfigBuilder
 {
-  public PortableConfig build(InputStream portableConfigFile)
+  public PortableConfig build(InputStream portableConfigFile) throws IOException
   {
     PortableConfig result = new PortableConfig();
 
@@ -44,12 +44,10 @@ public class DefaultPortableConfigBuilder implements PortableConfigBuilder
       }
 
 
-    } catch (JDOMException e)
+    }
+    catch (JDOMException e)
     {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    } catch (IOException e)
-    {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw new IOException("Failed to build XML document", e);
     }
 
     return result;

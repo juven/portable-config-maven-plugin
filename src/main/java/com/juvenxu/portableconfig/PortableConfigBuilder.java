@@ -1,5 +1,6 @@
 package com.juvenxu.portableconfig;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -7,5 +8,5 @@ import java.io.InputStream;
  */
 public interface PortableConfigBuilder
 {
-  PortableConfig build(InputStream portableConfigFile);
+  PortableConfig build(InputStream portableConfigFile) throws IOException;
 }

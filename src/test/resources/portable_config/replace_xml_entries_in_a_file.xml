@@ -2,14 +2,8 @@
     <config-file>
         <path>db.xml</path>
         <replaces>
-            <replace>
-                <key>/db/mysql/host</key>
-                <value>192.168.1.100</value>
-            </replace>
-            <replace>
-                <key>/db/mysql/username</key>
-                <value>juven</value>
-            </replace>
+            <replace xpath="/db/mysql/host">192.168.1.100</replace>
+            <replace xpath="/db/mysql/username">juven</replace>
         </replaces>
     </config-file>
 </portable-config>

@@ -19,49 +19,94 @@ public class PortableConfig
   }
 
   private List<ConfigFile> configFiles = new ArrayList<ConfigFile>();
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (!(o instanceof PortableConfig)) return false;
+
+    PortableConfig that = (PortableConfig) o;
+
+    if (!configFiles.equals(that.configFiles)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return configFiles.hashCode();
+  }
 }
 
 class ConfigFile
 {
-  private String path;
+  private final String path;
+
+  private List<Replace> replaces = new ArrayList<Replace>();
+
+  ConfigFile(String path)
+  {
+    this.path = path;
+  }
 
   String getPath()
   {
     return path;
   }
 
-  void setPath(String path)
-  {
-    this.path = path;
-  }
-
   List<Replace> getReplaces()
   {
     return replaces;
   }
-
-  void setReplaces(List<Replace> replaces)
+  void addReplace(Replace replace)
   {
-    this.replaces = replaces;
+    this.getReplaces().add(replace);
   }
 
-  private List<Replace> replaces = new ArrayList<Replace>();
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (!(o instanceof ConfigFile)) return false;
+
+    ConfigFile that = (ConfigFile) o;
+
+    if (!path.equals(that.path)) return false;
+    if (!replaces.equals(that.replaces)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int result = path.hashCode();
+    result = 31 * result + replaces.hashCode();
+    return result;
+  }
 }
 
 class Replace
 {
-  private String key;
+  private final String key;
 
-  private String value;
+  private final String xpath;
+
+  private final String value;
+
+  Replace(String key, String xpath, String value)
+  {
+    this.key = key;
+    this.xpath = xpath;
+    this.value = value;
+  }
 
   String getKey()
   {
     return key;
-  }
-
-  void setKey(String key)
-  {
-    this.key = key;
   }
 
   String getValue()
@@ -69,8 +114,32 @@ class Replace
     return value;
   }
 
-  void setValue(String value)
+  String getXpath()
   {
-    this.value = value;
+    return xpath;
+  }
+
+  @Override
+  public boolean equals(Object o)
+  {
+    if (this == o) return true;
+    if (!(o instanceof Replace)) return false;
+
+    Replace replace = (Replace) o;
+
+    if (key != null ? !key.equals(replace.key) : replace.key != null) return false;
+    if (value != null ? !value.equals(replace.value) : replace.value != null) return false;
+    if (xpath != null ? !xpath.equals(replace.xpath) : replace.xpath != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    int result = key != null ? key.hashCode() : 0;
+    result = 31 * result + (xpath != null ? xpath.hashCode() : 0);
+    result = 31 * result + (value != null ? value.hashCode() : 0);
+    return result;
   }
 }

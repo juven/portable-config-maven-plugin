@@ -27,17 +27,18 @@ public class DefaultPortableConfigBuilder implements PortableConfigBuilder
 
       for (Element configFileElement : rootElement.getChildren())
       {
-        ConfigFile configFile = new ConfigFile();
-
-        configFile.setPath(configFileElement.getChild("path").getValue());
+        ConfigFile configFile = new ConfigFile(configFileElement.getChild("path").getText());
 
         for (Element replaceElement : configFileElement.getChild("replaces").getChildren())
         {
-          Replace replace = new Replace();
-          replace.setKey(replaceElement.getChild("key").getValue());
-          replace.setValue(replaceElement.getChild("value").getValue());
-
-          configFile.getReplaces().add(replace);
+          if (replaceElement.getAttribute("key") != null)
+          {
+            configFile.addReplace(new Replace(replaceElement.getAttribute("key").getValue(), null, replaceElement.getText()));
+          }
+          else if (replaceElement.getAttribute("xpath") != null)
+          {
+            configFile.addReplace(new Replace(null, replaceElement.getAttribute("xpath").getValue(), replaceElement.getText()));
+          }
         }
 
         result.getConfigFiles().add(configFile);

@@ -3,12 +3,13 @@
         <path>db.properties</path>
         <replaces>
             <replace key="mysql.host">192.168.1.100</replace>
+            <replace key="mysql.username">juven</replace>
         </replaces>
     </config-file>
     <config-file>
-        <path>server.properties</path>
+        <path>WEB-INF/web.xml</path>
         <replaces>
-            <replace key="server.port">80</replace>
+            <replace xpath="/web-app/display-name">replaced</replace>
         </replaces>
     </config-file>
 </portable-config>

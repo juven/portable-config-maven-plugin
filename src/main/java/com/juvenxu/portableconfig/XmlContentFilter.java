@@ -55,13 +55,13 @@ public class XmlContentFilter implements ContentFilter
 
       if (StringUtils.isEmpty(rootNamespaceURI))
       {
-        xPathExpression = xPathFactory.compile(replace.getKey());
+        xPathExpression = xPathFactory.compile(replace.getXpath());
       }
       else
       {
         String customizedNamespacePrefix = "portableconfig";
         Namespace rootNamespace = Namespace.getNamespace(customizedNamespacePrefix, doc.getRootElement().getNamespaceURI());
-        String expression = replace.getKey().replace("/","/" + customizedNamespacePrefix+":");
+        String expression = replace.getXpath().replace("/","/" + customizedNamespacePrefix+":");
 
         xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, rootNamespace);
       }

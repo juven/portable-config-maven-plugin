@@ -1,16 +1,14 @@
 package com.juvenxu.portableconfig;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.plugin.logging.Log;
 
 import javax.activation.DataSource;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarInputStream;
-import java.util.jar.JarOutputStream;
 
 /**
  * @author juven
@@ -24,7 +22,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   //TODO I don't want to bring in any maven stuff here, so should clean it in the future
   private Log log;
 
-  public DefaultPortableConfigEngine( Log log)
+  public DefaultPortableConfigEngine(Log log)
   {
     this.log = log;
     this.portableConfigBuilder = new DefaultPortableConfigBuilder();
@@ -35,132 +33,21 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   @Override
   public void replaceDirectory(DataSource portableConfigDataSource, File directory) throws IOException
   {
-
     PortableConfig portableConfig = buildPortableConfig(portableConfigDataSource);
 
-    for (ConfigFile configFile : portableConfig.getConfigFiles())
-    {
-      File file = new File(directory, configFile.getPath());
+    AbstractTraverser traverser = new DirectoryTraverser(log, directory);
 
-      if (!file.exists() || file.isDirectory())
-      {
-        log.warn(String.format("File: %s does not exist or is a directory.", file.getPath()));
-
-        continue;
-      }
-
-      if (!hasContentFilter(configFile.getPath()))
-      {
-        log.warn(String.format("Ignore replacing: %s", file.getPath()));
-
-        continue;
-      }
-
-      log.info(String.format("Replacing file: %s", file.getPath()));
-
-      File tmpTxt = File.createTempFile(Long.toString(System.nanoTime()), ".txt");
-
-      ContentFilter contentFilter = getContentFilter(configFile.getPath());
-
-      InputStream inputStream = null;
-
-      OutputStream outputStream = null;
-
-      try
-      {
-        inputStream = new FileInputStream(file);
-
-        outputStream = new FileOutputStream(tmpTxt);
-
-        contentFilter.filter(inputStream, outputStream, configFile.getReplaces());
-      }
-      finally
-      {
-        IOUtils.closeQuietly(inputStream);
-        IOUtils.closeQuietly(outputStream);
-      }
-
-      FileUtils.copyFile(tmpTxt, file);
-    }
-
+    traverser.traverse(portableConfig);
   }
 
   @Override
   public void replaceJar(DataSource portableConfigDataSource, File jar) throws IOException
   {
-
     PortableConfig portableConfig = buildPortableConfig(portableConfigDataSource);
 
-    JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
-    File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
-    log.info("Tmp file: " + tmpJar.getAbsolutePath());
-    JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
+    AbstractTraverser traverser = new JarTraverser(log, jar);
 
-    byte[] buffer = new byte[1024];
-    while (true)
-    {
-      JarEntry jarEntry = jarInputStream.getNextJarEntry();
-
-      if (jarEntry == null)
-      {
-        break;
-      }
-
-      log.debug(jarEntry.getName());
-
-      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-      while (true)
-      {
-        int length = jarInputStream.read(buffer, 0, buffer.length);
-
-        if (length <= 0)
-        {
-          break;
-        }
-
-        byteArrayOutputStream.write(buffer, 0, length);
-
-      }
-
-      boolean filtered = false;
-
-      for (ConfigFile configFile : portableConfig.getConfigFiles())
-      {
-        if (!configFile.getPath().equals(jarEntry.getName()))
-        {
-          continue;
-        }
-
-        if (!hasContentFilter(jarEntry.getName()))
-        {
-          continue;
-        }
-
-        log.info(String.format("Replacing: %s!%s", jar.getName(), jarEntry.getName()));
-
-        JarEntry filteredJarEntry = new JarEntry(jarEntry.getName());
-        jarOutputStream.putNextEntry(filteredJarEntry);
-
-        ContentFilter contentFilter = getContentFilter(jarEntry.getName());
-
-        contentFilter.filter(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
-
-        filtered = true;
-      }
-
-      if (!filtered)
-      {
-        jarOutputStream.putNextEntry(jarEntry);
-        byteArrayOutputStream.writeTo(jarOutputStream);
-      }
-    }
-
-    IOUtils.closeQuietly(jarInputStream);
-    IOUtils.closeQuietly(jarOutputStream);
-
-    log.info("Replacing: " + jar.getAbsolutePath() + " with: " + tmpJar.getAbsolutePath());
-    FileUtils.copyFile(tmpJar, jar);
+    traverser.traverse(portableConfig);
   }
 
   private PortableConfig buildPortableConfig(DataSource portableConfigDataSource) throws IOException
@@ -178,21 +65,4 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 
   }
 
-  private boolean hasContentFilter(final String contentName)
-  {
-    return getContentFilter(contentName) != null;
-  }
-
-  private ContentFilter getContentFilter(final String contentName)
-  {
-    for ( ContentFilter contentFilter : contentFilters)
-    {
-      if ( contentFilter.accept(contentName))
-      {
-        return contentFilter;
-      }
-    }
-
-    return null;
-  }
 }

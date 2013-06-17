@@ -1,3 +1,6 @@
+[![Build Status](https://api.travis-ci.org/juven/portable-config-maven-plugin.png)](https://travis-ci.org/juven/portable-config-maven-plugin)
+
+
 ## TODO
 
 * handle encoding

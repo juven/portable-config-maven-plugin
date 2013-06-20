@@ -1,41 +1,37 @@
 package com.juvenxu.portableconfig;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.component.annotations.Requirement;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 import javax.activation.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author juven
  */
-public class DefaultPortableConfigEngine implements PortableConfigEngine
+@Component(role = PortableConfigEngine.class)
+public class DefaultPortableConfigEngine extends AbstractLogEnabled implements PortableConfigEngine
 {
+  @Requirement
   private PortableConfigBuilder portableConfigBuilder;
 
-  private List<ContentFilter> contentFilters = new ArrayList<ContentFilter>();
+  @Requirement(role = ContentFilter.class)
+  private List<ContentFilter> contentFilters;
 
-  //TODO I don't want to bring in any maven stuff here, so should clean it in the future
-  private Log log;
-
-  public DefaultPortableConfigEngine(Log log)
-  {
-    this.log = log;
-    this.portableConfigBuilder = new DefaultPortableConfigBuilder();
-    contentFilters.add(new PropertiesContentFilter());
-    contentFilters.add(new XmlContentFilter());
-  }
+  public DefaultPortableConfigEngine()
+  {}
 
   @Override
   public void replaceDirectory(DataSource portableConfigDataSource, File directory) throws IOException
   {
     PortableConfig portableConfig = buildPortableConfig(portableConfigDataSource);
 
-    AbstractTraverser traverser = new DirectoryTraverser(log, directory);
+    AbstractTraverser traverser = new DirectoryTraverser(getLogger(),contentFilters, directory);
 
     traverser.traverse(portableConfig);
   }
@@ -45,7 +41,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   {
     PortableConfig portableConfig = buildPortableConfig(portableConfigDataSource);
 
-    AbstractTraverser traverser = new JarTraverser(log, jar);
+    AbstractTraverser traverser = new JarTraverser(getLogger(),contentFilters, jar);
 
     traverser.traverse(portableConfig);
   }

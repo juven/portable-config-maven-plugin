@@ -2,9 +2,11 @@ package com.juvenxu.portableconfig;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.logging.Logger;
+
 
 import java.io.*;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -16,9 +18,9 @@ public class JarTraverser extends AbstractTraverser
 {
   private final File jar;
 
-  public JarTraverser(Log log, File jar)
+  public JarTraverser(Logger log, List<ContentFilter> contentFilters, File jar)
   {
-    super(log);
+    super(log, contentFilters);
     this.jar = jar;
   }
 

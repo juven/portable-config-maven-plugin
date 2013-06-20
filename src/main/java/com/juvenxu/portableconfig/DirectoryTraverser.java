@@ -2,9 +2,10 @@ package com.juvenxu.portableconfig;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.logging.Logger;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * @author juven
@@ -13,9 +14,9 @@ public class DirectoryTraverser extends AbstractTraverser
 {
   private final File directory;
 
-  public DirectoryTraverser(Log log, File directory)
+  public DirectoryTraverser(Logger log, List<ContentFilter> contentFilters, File directory)
   {
-    super(log);
+    super(log, contentFilters);
     this.directory = directory;
   }
 

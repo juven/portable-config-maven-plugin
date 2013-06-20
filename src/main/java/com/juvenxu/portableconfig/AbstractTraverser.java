@@ -1,27 +1,26 @@
 package com.juvenxu.portableconfig;
 
-import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.component.annotations.Requirement;
+import org.codehaus.plexus.logging.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author juven
  */
 public abstract class AbstractTraverser
 {
+  protected final Logger log;
 
-  protected Log log;
+  protected final List<ContentFilter> contentFilters;
 
-  protected List<ContentFilter> contentFilters = new ArrayList<ContentFilter>();
-
-  public AbstractTraverser( Log log)
+  public AbstractTraverser(Logger log, List<ContentFilter> contentFilters)
   {
     this.log = log;
 
-    contentFilters.add(new PropertiesContentFilter());
-    contentFilters.add(new XmlContentFilter());
+    this.contentFilters = contentFilters;
   }
 
   public abstract void traverse(PortableConfig portableConfig) throws IOException;
@@ -33,9 +32,9 @@ public abstract class AbstractTraverser
 
   protected ContentFilter getContentFilter(final String contentName)
   {
-    for ( ContentFilter contentFilter : contentFilters)
+    for (ContentFilter contentFilter : contentFilters)
     {
-      if ( contentFilter.accept(contentName))
+      if (contentFilter.accept(contentName))
       {
         return contentFilter;
       }

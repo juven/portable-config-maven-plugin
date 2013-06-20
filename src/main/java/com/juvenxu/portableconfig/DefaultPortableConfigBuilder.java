@@ -1,5 +1,6 @@
 package com.juvenxu.portableconfig;
 
+import org.codehaus.plexus.component.annotations.Component;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -11,6 +12,7 @@ import java.io.InputStream;
 /**
  * @author juven
  */
+@Component(role=PortableConfigBuilder.class)
 public class DefaultPortableConfigBuilder implements PortableConfigBuilder
 {
   public PortableConfig build(InputStream portableConfigFile) throws IOException

@@ -2,6 +2,7 @@ package com.juvenxu.portableconfig;
 
 
 import org.apache.maven.monitor.logging.DefaultLog;
+import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -27,28 +28,25 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author juven
  */
-public class DefaultPortableConfigEngineTest
+public class DefaultPortableConfigEngineTest extends PlexusTestCase
 {
 
   private PortableConfigEngine sut;
 
   private File targetDirectory;
 
-  @Before
-  public void setup() throws Exception
+
+  @Override
+  public void setUp() throws Exception
   {
     targetDirectory = new File(this.getClass().getResource("/to_be_replaced").toURI());
-    sut = new DefaultPortableConfigEngine(new DefaultLog( new ConsoleLogger()));
+    sut = lookup(PortableConfigEngine.class);
   }
 
-  //@Test(expected = PortableConfigException.class)
-  public void GIVEN_portable_config_file_path_does_not_exist_WHEN_run_engine_THEN_should_get_exception() throws Exception
-  {
-    applyPortableConfigXml("path_does_not_exist.xml");
-  }
 
-  @Test
-  public void GIVEN_portable_config_replacing_properties_in_a_file_WHEN_run_engine_THEN_properties_should_be_replaced() throws Exception
+
+
+  public void test_GIVEN_portable_config_replacing_properties_in_a_file_WHEN_run_engine_THEN_properties_should_be_replaced() throws Exception
   {
     applyPortableConfigXml("replace_properties_in_a_file.xml");
 
@@ -58,8 +56,8 @@ public class DefaultPortableConfigEngineTest
     assertEquals("test", result.getProperty("mysql.password"));
   }
 
-  @Test
-  public void GIVEN_portable_config_replacing_two_properties_files_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
+
+  public void test_GIVEN_portable_config_replacing_two_properties_files_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
   {
     applyPortableConfigXml("replace_two_properties_files.xml");
 
@@ -70,8 +68,8 @@ public class DefaultPortableConfigEngineTest
     assertEquals("80", serverProperties.getProperty("server.port"));
   }
 
-  @Test
-  public void GIVEN_portable_config_replacing_xml_entries_in_a_file_WHEN_run_engine_THEN_entries_should_be_replaced() throws Exception
+
+  public void test_GIVEN_portable_config_replacing_xml_entries_in_a_file_WHEN_run_engine_THEN_entries_should_be_replaced() throws Exception
   {
     applyPortableConfigXml("replace_xml_entries_in_a_file.xml");
 
@@ -79,16 +77,16 @@ public class DefaultPortableConfigEngineTest
     assertEquals("juven", getResultXmlEntry("db.xml", "/db/mysql/username"));
   }
 
-  @Test
-  public void GIVEN_portable_config_replacing_two_xml_files_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
+
+  public void test_GIVEN_portable_config_replacing_two_xml_files_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
   {
     applyPortableConfigXml("replace_two_xml_files.xml");
     assertEquals("192.168.1.100", getResultXmlEntry("db.xml", "/db/mysql/host"));
     assertEquals("80", getResultXmlEntry("server.xml", "/server/port"));
   }
 
-  @Test
-  public void GIVEN_portable_config_replacing_properties_file_and_xml_file_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
+
+  public void test_GIVEN_portable_config_replacing_properties_file_and_xml_file_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
   {
     applyPortableConfigXml("replace_properties_file_and_xml_file.xml");
 

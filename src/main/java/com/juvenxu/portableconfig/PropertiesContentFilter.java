@@ -1,5 +1,7 @@
 package com.juvenxu.portableconfig;
 
+import org.codehaus.plexus.component.annotations.Component;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -9,6 +11,7 @@ import java.util.Properties;
 /**
  * @author juven
  */
+@Component(role = ContentFilter.class, hint = "properties")
 public class PropertiesContentFilter implements ContentFilter
 {
   @Override

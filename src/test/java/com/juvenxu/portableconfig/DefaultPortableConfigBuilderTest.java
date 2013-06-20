@@ -1,7 +1,9 @@
 package com.juvenxu.portableconfig;
 
 
+import org.codehaus.plexus.PlexusTestCase;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -9,12 +11,20 @@ import java.io.InputStream;
 /**
  * @author juven
  */
-public class DefaultPortableConfigBuilderTest
+public class DefaultPortableConfigBuilderTest extends PlexusTestCase
 {
-  PortableConfigBuilder sut = new DefaultPortableConfigBuilder();
+  private PortableConfigBuilder sut;
 
-  @Test
-  public void buildATypicalPortableConfig() throws Exception
+
+  @Override
+  public void setUp() throws Exception
+  {
+    super.setUp();
+    sut = lookup(PortableConfigBuilder.class);
+  }
+
+
+  public void testBuildATypicalPortableConfig() throws Exception
   {
     InputStream inputStream =  this.getClass().getResourceAsStream("/portable_config/typical.xml");
 

@@ -3,6 +3,7 @@ package com.juvenxu.portableconfig;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.maven.monitor.logging.DefaultLog;
+import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,20 +20,20 @@ import java.util.jar.JarInputStream;
  * @author juven
  */
 
-public class DefaultPortableConfigEngineReplaceJarTest
+public class DefaultPortableConfigEngineReplaceJarTest extends PlexusTestCase
 {
 
   private PortableConfigEngine sut;
 
 
-  @Before
-  public void setup()
+  @Override
+  public void setUp() throws Exception
   {
-    sut = new DefaultPortableConfigEngine(new DefaultLog(new ConsoleLogger()));
+    sut = lookup(PortableConfigEngine.class);
   }
 
-  @Test
-  public void replaceJarWebXml() throws Exception
+
+  public void testReplaceJarWebXml() throws Exception
   {
     DataSource potableConfigDataSource = new FileDataSource(new File(this.getClass().getResource("/portable_config/" + "replace_jar_web_xml.xml").toURI()));
     File jar = new File(this.getClass().getResource("/to_be_replaced/" + "portableconfig-demo-1.0-SNAPSHOT.war").toURI());

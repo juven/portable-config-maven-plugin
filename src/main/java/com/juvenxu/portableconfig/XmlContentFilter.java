@@ -1,5 +1,6 @@
 package com.juvenxu.portableconfig;
 
+import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -20,6 +21,7 @@ import java.util.List;
 /**
  * @author juven
  */
+@Component(role = ContentFilter.class, hint = "xml")
 public class XmlContentFilter implements ContentFilter
 {
   @Override
@@ -61,7 +63,7 @@ public class XmlContentFilter implements ContentFilter
       {
         String customizedNamespacePrefix = "portableconfig";
         Namespace rootNamespace = Namespace.getNamespace(customizedNamespacePrefix, doc.getRootElement().getNamespaceURI());
-        String expression = replace.getXpath().replace("/","/" + customizedNamespacePrefix+":");
+        String expression = replace.getXpath().replace("/", "/" + customizedNamespacePrefix + ":");
 
         xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, rootNamespace);
       }

@@ -1,0 +1,7 @@
+@startuml
+
+Mojo --o PortableConfigEngine
+PortableConfigEngine --o PortableConfigBuilder
+PortableConfigEngine --o AbstractTraverser
+AbstractTraverser --o ContentFilter
+@enduml

@@ -2,11 +2,9 @@ package com.juvenxu.portableconfig;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.plexus.logging.Logger;
-
+import org.codehaus.plexus.component.annotations.Component;
 
 import java.io.*;
-import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -14,23 +12,17 @@ import java.util.jar.JarOutputStream;
 /**
  * @author juven
  */
+@Component(role = AbstractTraverser.class, hint = "jar")
 public class JarTraverser extends AbstractTraverser
 {
-  private final File jar;
-
-  public JarTraverser(Logger log, List<ContentFilter> contentFilters, File jar)
-  {
-    super(log, contentFilters);
-    this.jar = jar;
-  }
 
   @Override
-  public void traverse(PortableConfig portableConfig) throws IOException
+  public void traverse(PortableConfig portableConfig, File jar) throws IOException
   {
 
     JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
     File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
-    log.info("Tmp file: " + tmpJar.getAbsolutePath());
+    getLogger().info("Tmp file: " + tmpJar.getAbsolutePath());
     JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
 
     byte[] buffer = new byte[1024];
@@ -43,7 +35,7 @@ public class JarTraverser extends AbstractTraverser
         break;
       }
 
-      log.debug(jarEntry.getName());
+      getLogger().debug(jarEntry.getName());
 
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
@@ -74,7 +66,7 @@ public class JarTraverser extends AbstractTraverser
           continue;
         }
 
-        log.info(String.format("Replacing: %s!%s", jar.getName(), jarEntry.getName()));
+        getLogger().info(String.format("Replacing: %s!%s", jar.getName(), jarEntry.getName()));
 
         JarEntry filteredJarEntry = new JarEntry(jarEntry.getName());
         jarOutputStream.putNextEntry(filteredJarEntry);
@@ -96,7 +88,7 @@ public class JarTraverser extends AbstractTraverser
     IOUtils.closeQuietly(jarInputStream);
     IOUtils.closeQuietly(jarOutputStream);
 
-    log.info("Replacing: " + jar.getAbsolutePath() + " with: " + tmpJar.getAbsolutePath());
+    getLogger().info("Replacing: " + jar.getAbsolutePath() + " with: " + tmpJar.getAbsolutePath());
     FileUtils.copyFile(tmpJar, jar);
   }
 }

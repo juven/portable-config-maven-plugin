@@ -2,26 +2,19 @@ package com.juvenxu.portableconfig;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.component.annotations.Component;
 
 import java.io.*;
-import java.util.List;
 
 /**
  * @author juven
  */
+@Component(role = AbstractTraverser.class, hint = "directory")
 public class DirectoryTraverser extends AbstractTraverser
 {
-  private final File directory;
-
-  public DirectoryTraverser(Logger log, List<ContentFilter> contentFilters, File directory)
-  {
-    super(log, contentFilters);
-    this.directory = directory;
-  }
 
   @Override
-  public void traverse(PortableConfig portableConfig) throws IOException
+  public void traverse(PortableConfig portableConfig, File directory) throws IOException
   {
     for (ConfigFile configFile : portableConfig.getConfigFiles())
     {
@@ -29,19 +22,19 @@ public class DirectoryTraverser extends AbstractTraverser
 
       if (!file.exists() || file.isDirectory())
       {
-        log.warn(String.format("File: %s does not exist or is a directory.", file.getPath()));
+        getLogger().warn(String.format("File: %s does not exist or is a directory.", file.getPath()));
 
         continue;
       }
 
       if (!hasContentFilter(configFile.getPath()))
       {
-        log.warn(String.format("Ignore replacing: %s", file.getPath()));
+        getLogger().warn(String.format("Ignore replacing: %s", file.getPath()));
 
         continue;
       }
 
-      log.info(String.format("Replacing file: %s", file.getPath()));
+      getLogger().info(String.format("Replacing file: %s", file.getPath()));
 
       File tmpTxt = File.createTempFile(Long.toString(System.nanoTime()), ".txt");
 

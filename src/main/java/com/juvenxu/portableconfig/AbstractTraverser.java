@@ -1,29 +1,21 @@
 package com.juvenxu.portableconfig;
 
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author juven
  */
-public abstract class AbstractTraverser
+public abstract class AbstractTraverser extends AbstractLogEnabled
 {
-  protected final Logger log;
+  @Requirement(role = ContentFilter.class)
+  protected List<ContentFilter> contentFilters;
 
-  protected final List<ContentFilter> contentFilters;
-
-  public AbstractTraverser(Logger log, List<ContentFilter> contentFilters)
-  {
-    this.log = log;
-
-    this.contentFilters = contentFilters;
-  }
-
-  public abstract void traverse(PortableConfig portableConfig) throws IOException;
+  public abstract void traverse(PortableConfig portableConfig, File file) throws IOException;
 
   protected boolean hasContentFilter(final String contentName)
   {

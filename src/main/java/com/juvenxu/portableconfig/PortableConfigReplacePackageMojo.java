@@ -7,6 +7,7 @@ import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.StringUtils;
 
 import javax.activation.FileDataSource;
 import java.io.File;
@@ -22,7 +23,7 @@ import java.io.IOException;
 public class PortableConfigReplacePackageMojo extends AbstractMojo
 {
 
-  @Parameter
+  @Parameter(property = "portableconfig")
   private File portableConfig;
 
   @Parameter(readonly = true, defaultValue = "${project.packaging}")
@@ -40,9 +41,17 @@ public class PortableConfigReplacePackageMojo extends AbstractMojo
   @Override
   public void execute() throws MojoExecutionException, MojoFailureException
   {
+
+    if (portableConfig == null || !portableConfig.exists())
+    {
+      getLog().warn("No portable config file is provided, skipping running.");
+
+      return;
+    }
+
     if (!"war".equals(packaging))
     {
-      this.getLog().info(String.format("Ignoring packaging %s", packaging));
+      getLog().info(String.format("Ignoring packaging %s", packaging));
 
       return;
     }

@@ -1,9 +1,6 @@
 <portable-config>
-    <config-file>
-        <path>db.xml</path>
-        <replaces>
-            <replace xpath="/db/mysql/host">192.168.1.100</replace>
-            <replace xpath="/db/mysql/username">juven</replace>
-        </replaces>
+    <config-file path="db.xml">
+        <replace xpath="/db/mysql/host">192.168.1.100</replace>
+        <replace xpath="/db/mysql/username">juven</replace>
     </config-file>
 </portable-config>

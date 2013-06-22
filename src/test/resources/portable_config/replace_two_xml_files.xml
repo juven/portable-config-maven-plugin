@@ -1,14 +1,8 @@
 <portable-config>
-    <config-file>
-        <path>db.xml</path>
-        <replaces>
-            <replace xpath="/db/mysql/host">192.168.1.100</replace>
-        </replaces>
+    <config-file path="db.xml">
+        <replace xpath="/db/mysql/host">192.168.1.100</replace>
     </config-file>
-    <config-file>
-        <path>server.xml</path>
-        <replaces>
-            <replace xpath="/server/port">80</replace>
-        </replaces>
+    <config-file path="server.xml">
+        <replace xpath="/server/port">80</replace>
     </config-file>
 </portable-config>

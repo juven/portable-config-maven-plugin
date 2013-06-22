@@ -1,9 +1,6 @@
 <portable-config>
-    <config-file>
-        <path>db.properties</path>
-        <replaces>
-            <replace key="mysql.host">192.168.1.100</replace>
-            <replace key="mysql.username">juven</replace>
-        </replaces>
+    <config-file path="db.properties">
+        <replace key="mysql.host">192.168.1.100</replace>
+        <replace key="mysql.username">juven</replace>
     </config-file>
 </portable-config>

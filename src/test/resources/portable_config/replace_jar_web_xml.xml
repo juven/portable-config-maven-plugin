@@ -1,14 +1,8 @@
 <portable-config>
-    <config-file>
-        <path>WEB-INF/web.xml</path>
-        <replaces>
-            <replace xpath="/web-app/display-name">yup replaced</replace>
-        </replaces>
+    <config-file path="WEB-INF/web.xml">
+        <replace xpath="/web-app/display-name">yup replaced</replace>
     </config-file>
-    <config-file>
-        <path>WEB-INF/classes/db.properties</path>
-        <replaces>
-            <replace key="mysql.password">yup replaced</replace>
-        </replaces>
+    <config-file path="WEB-INF/classes/db.properties">
+        <replace key="mysql.password">yup replaced</replace>
     </config-file>
 </portable-config>

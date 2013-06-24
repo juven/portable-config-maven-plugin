@@ -14,6 +14,7 @@
     <packaging>maven-plugin</packaging>
 
     <name>Portable Config Maven Plugin</name>
+    <description>Portable Config Maven Plugin</description>
     <url>https://github.com/juven/portable-config-maven-plugin</url>
 
     <scm>
@@ -22,6 +23,12 @@
         <url>git@github.com:juven/portable-config-maven-plugin.git</url>
     </scm>
 
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
     <developers>
         <developer>

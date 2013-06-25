@@ -23,7 +23,7 @@ import java.io.IOException;
 public class PortableConfigReplacePackageMojo extends AbstractMojo
 {
 
-  @Parameter(property = "portableconfig")
+  @Parameter(property = "portableConfig")
   private File portableConfig;
 
   @Parameter(readonly = true, defaultValue = "${project.packaging}")

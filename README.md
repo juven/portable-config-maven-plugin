@@ -46,7 +46,7 @@ database.jdbc.password=dev_pwd
      <plugin>
        <groupId>com.juvenxu.portable-config-maven-plugin</groupId>
        <artifactId>portable-config-maven-plugin</artifactId>
-       <version>1.0.0</version>
+       <version>1.0.1</version>
          <executions>
            <execution>
              <goals>
@@ -60,8 +60,8 @@ database.jdbc.password=dev_pwd
      </plugin>
    ```
 
- You can also use maven property __portableconfig__:
- `$ mvn clean package -Dportableconfig="src/main/portable/test.xml"`
+ You can also use maven property __portableConfig__:
+ `$ mvn clean package -DportableConfig="src/main/portable/test.xml"`
 
 4. And further wrapper the property into Maven profile:
 
@@ -70,7 +70,7 @@ database.jdbc.password=dev_pwd
        <profile>
          <id>test</id>
          <properties>
-           <portableconfig>src/main/portable/test.xml</portableconfig>
+           <portableConfig>src/main/portable/test.xml</portableConfig>
          </properties>
        </profiles>
      </profiles>

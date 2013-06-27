@@ -40,6 +40,16 @@ database.jdbc.password=dev_pwd
  Here the _config_file_ is the file you want to change for testing environment, and it's _path_ is the relative path in final war.
  Then you can use _replace_ to change the configurations you want to change.
 
+ Besides properties file, you can also change configurations in XML files with xpath:
+
+  ```xml
+    <?xml version="1.0" encoding="utf-8" ?>
+    <portable-config>
+      <config-file path="WEB-INF/web.xml">
+        <replace xpath="/web-app/display-name">awesome app</replace>
+      </config-file>
+    </portable-config>
+  ```
 3. Configuration Maven to use portable-config-maven-plugin and apply your portable config:
 
   ```xml
@@ -75,3 +85,7 @@ database.jdbc.password=dev_pwd
        </profiles>
      </profiles>
   ```
+
+## Acknowledgments
+
+* Thanks to [Jacky Chan](https://github.com/linux-china) for initially inspiring me to write this tool with thoughtful ideas.

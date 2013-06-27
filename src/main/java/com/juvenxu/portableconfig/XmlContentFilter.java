@@ -68,14 +68,9 @@ public class XmlContentFilter implements ContentFilter
         xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, rootNamespace);
       }
 
-      List<Element> elements = xPathExpression.evaluate(doc);
-
-      if (!elements.isEmpty())
+      for (Element element : (List<Element>) xPathExpression.evaluate(doc))
       {
-        for (Element element : elements)
-        {
-          element.setText(replace.getValue());
-        }
+        element.setText(replace.getValue());
       }
     }
 

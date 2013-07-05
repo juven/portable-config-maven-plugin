@@ -1,5 +1,6 @@
 package com.juvenxu.portableconfig;
 
+import com.juvenxu.portableconfig.model.PortableConfig;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 

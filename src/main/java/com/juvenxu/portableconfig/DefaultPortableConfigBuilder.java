@@ -1,5 +1,8 @@
 package com.juvenxu.portableconfig;
 
+import com.juvenxu.portableconfig.model.ConfigFile;
+import com.juvenxu.portableconfig.model.PortableConfig;
+import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.component.annotations.Component;
 import org.jdom2.Document;
 import org.jdom2.Element;

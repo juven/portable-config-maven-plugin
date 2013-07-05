@@ -1,5 +1,7 @@
 package com.juvenxu.portableconfig;
 
+import com.juvenxu.portableconfig.model.PortableConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 

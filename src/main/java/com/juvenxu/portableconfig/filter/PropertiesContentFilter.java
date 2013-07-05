@@ -1,5 +1,7 @@
-package com.juvenxu.portableconfig;
+package com.juvenxu.portableconfig.filter;
 
+import com.juvenxu.portableconfig.ContentFilter;
+import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.component.annotations.Component;
 
 import java.io.IOException;

@@ -1,5 +1,6 @@
-package com.juvenxu.portableconfig;
+package com.juvenxu.portableconfig.mojo;
 
+import com.juvenxu.portableconfig.PortableConfigEngine;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;

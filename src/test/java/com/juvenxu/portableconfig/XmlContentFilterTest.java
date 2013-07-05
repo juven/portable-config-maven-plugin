@@ -1,5 +1,6 @@
 package com.juvenxu.portableconfig;
 
+import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.PlexusTestCase;
 import org.junit.Assert;
 

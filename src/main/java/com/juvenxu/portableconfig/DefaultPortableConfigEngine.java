@@ -1,5 +1,6 @@
 package com.juvenxu.portableconfig;
 
+import com.juvenxu.portableconfig.model.PortableConfig;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;

@@ -1,5 +1,6 @@
-package com.juvenxu.portableconfig;
+package com.juvenxu.portableconfig.filter;
 
+import com.juvenxu.portableconfig.ContentFilter;
 import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.PlexusTestCase;
 import org.junit.Assert;

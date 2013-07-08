@@ -30,12 +30,6 @@ public class XmlContentFilter implements ContentFilter
     return contentName.endsWith(".xml");
   }
 
-  //@Override
-  public void filter(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws IOException
-  {
-    filter(new InputStreamReader(inputStream), new OutputStreamWriter(outputStream), replaces);
-  }
-
   @Override
   public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
   {

@@ -19,12 +19,6 @@ public class ShellContentFilter implements ContentFilter
     return contentName.endsWith(".sh");
   }
 
-  //@Override
-  public void filter(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws IOException
-  {
-    filter(new InputStreamReader(inputStream), new OutputStreamWriter(outputStream), replaces);
-  }
-
   @Override
   public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
   {

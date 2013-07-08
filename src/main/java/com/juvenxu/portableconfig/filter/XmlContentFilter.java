@@ -15,9 +15,7 @@ import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -32,8 +30,14 @@ public class XmlContentFilter implements ContentFilter
     return contentName.endsWith(".xml");
   }
 
-  @Override
+  //@Override
   public void filter(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws IOException
+  {
+    filter(new InputStreamReader(inputStream), new OutputStreamWriter(outputStream), replaces);
+  }
+
+  @Override
+  public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
   {
     SAXBuilder saxBuilder = new SAXBuilder();
 
@@ -41,7 +45,7 @@ public class XmlContentFilter implements ContentFilter
 
     try
     {
-      doc = saxBuilder.build(inputStream);
+      doc = saxBuilder.build(reader);
     }
     catch (JDOMException e)
     {
@@ -78,6 +82,6 @@ public class XmlContentFilter implements ContentFilter
 
     XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 
-    xmlOutputter.output(doc, outputStream);
+    xmlOutputter.output(doc, writer);
   }
 }

@@ -5,9 +5,7 @@ import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.PlexusTestCase;
 import org.junit.Assert;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +34,11 @@ public class XmlContentFilterTest extends PlexusTestCase
             "</server>";
     List<Replace> replaces = new ArrayList<Replace>();
 
-    OutputStream outputStream = new ByteArrayOutputStream();
+    StringWriter writer = new StringWriter();
 
-    sut.filter(new ByteArrayInputStream(input.getBytes()), outputStream, replaces);
+    sut.filter(new StringReader(input), writer, replaces);
 
-    String output = outputStream.toString();
+    String output = writer.toString();
     Assert.assertThat(output, containsString("<server>"));
     Assert.assertThat(output, containsString("<host>localhost</host>"));
     Assert.assertThat(output, containsString("<port>8080</port>"));
@@ -58,11 +56,11 @@ public class XmlContentFilterTest extends PlexusTestCase
 
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace(null, "/server/port", "80"));
-    OutputStream outputStream = new ByteArrayOutputStream();
+    StringWriter writer = new StringWriter();
 
-    sut.filter(new ByteArrayInputStream(input.getBytes()), outputStream, replaces);
+    sut.filter(new StringReader(input), writer, replaces);
 
-    String output = outputStream.toString();
+    String output = writer.toString();
     Assert.assertThat(output, containsString("<port>80</port>"));
   }
 
@@ -80,11 +78,11 @@ public class XmlContentFilterTest extends PlexusTestCase
 
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace(null, "/web-app/display-name", "staging"));
-    OutputStream outputStream = new ByteArrayOutputStream();
+    StringWriter writer = new StringWriter();
 
-    sut.filter(new ByteArrayInputStream(input.getBytes()), outputStream, replaces);
+    sut.filter(new StringReader(input), writer, replaces);
 
-    String output = outputStream.toString();
+    String output = writer.toString();
     Assert.assertThat(output, containsString("<display-name>staging</display-name>"));
   }
 }

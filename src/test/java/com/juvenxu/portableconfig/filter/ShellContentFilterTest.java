@@ -5,9 +5,7 @@ import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.PlexusTestCase;
 import org.junit.Assert;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,11 +32,11 @@ public class ShellContentFilterTest extends PlexusTestCase
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace("OUT_HOME", null, "/var/out"));
 
-    OutputStream outputStream = new ByteArrayOutputStream();
+    StringWriter writer = new StringWriter();
 
-    sut.filter(new ByteArrayInputStream(input.getBytes()), outputStream, replaces);
+    sut.filter(new StringReader(input), writer, replaces);
 
-    String output = outputStream.toString();
+    String output = writer.toString();
     Assert.assertThat(output, containsString("OUT_HOME=\"/var/out\""));
     Assert.assertThat(output, containsString("APP_HOME=\"/tmp/app\""));
   }
@@ -51,11 +49,11 @@ public class ShellContentFilterTest extends PlexusTestCase
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace("OUT_HOME", null, "/var/out"));
 
-    OutputStream outputStream = new ByteArrayOutputStream();
+    StringWriter writer = new StringWriter();
 
-    sut.filter(new ByteArrayInputStream(input.getBytes()), outputStream, replaces);
+    sut.filter(new StringReader(input), writer, replaces);
 
-    String output = outputStream.toString();
+    String output = writer.toString();
     Assert.assertThat(output, containsString("OUT_HOME='/var/out'"));
     Assert.assertThat(output, containsString("APP_HOME='/tmp/app'"));
   }
@@ -68,11 +66,11 @@ public class ShellContentFilterTest extends PlexusTestCase
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace("OUT_HOME", null, "/var/out"));
 
-    OutputStream outputStream = new ByteArrayOutputStream();
+    StringWriter writer = new StringWriter();
 
-    sut.filter(new ByteArrayInputStream(input.getBytes()), outputStream, replaces);
+    sut.filter(new StringReader(input), writer, replaces);
 
-    String output = outputStream.toString();
+    String output = writer.toString();
     Assert.assertThat(output, containsString("OUT_HOME=/var/out"));
     Assert.assertThat(output, containsString("APP_HOME=/tmp/app"));
   }
@@ -85,11 +83,11 @@ public class ShellContentFilterTest extends PlexusTestCase
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace("OUT_HOME", null, "/var/out"));
 
-    OutputStream outputStream = new ByteArrayOutputStream();
+    StringWriter writer = new StringWriter();
 
-    sut.filter(new ByteArrayInputStream(input.getBytes()), outputStream, replaces);
+    sut.filter(new StringReader(input), writer, replaces);
 
-    String output = outputStream.toString();
+    String output = writer.toString();
     Assert.assertThat(output, containsString("export OUT_HOME=\"/var/out\""));
     Assert.assertThat(output, containsString("export APP_HOME=\"/tmp/app\""));
   }

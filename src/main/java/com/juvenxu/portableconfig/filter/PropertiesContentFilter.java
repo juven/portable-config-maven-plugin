@@ -4,9 +4,7 @@ import com.juvenxu.portableconfig.ContentFilter;
 import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.component.annotations.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.List;
 import java.util.Properties;
 
@@ -22,12 +20,18 @@ public class PropertiesContentFilter implements ContentFilter
     return contentName.endsWith(".properties");
   }
 
-  @Override
+  //@Override
   public void filter(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws IOException
+  {
+    filter(new InputStreamReader(inputStream), new OutputStreamWriter(outputStream), replaces);
+  }
+
+  @Override
+  public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
   {
     Properties properties = new Properties();
 
-    properties.load(inputStream);
+    properties.load(reader);
 
     for (Replace replace : replaces)
     {
@@ -37,6 +41,6 @@ public class PropertiesContentFilter implements ContentFilter
       }
     }
 
-    properties.store(outputStream, null);
+    properties.store(writer, null);
   }
 }

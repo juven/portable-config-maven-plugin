@@ -77,7 +77,9 @@ public class JarTraverser extends AbstractTraverser
 
         ContentFilter contentFilter = getContentFilter(jarEntry.getName());
 
-        contentFilter.filter(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
+        Reader reader = new InputStreamReader(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+        Writer writer = new OutputStreamWriter(jarOutputStream);
+        contentFilter.filter(reader, writer, configFile.getReplaces());
 
         filtered = true;
       }

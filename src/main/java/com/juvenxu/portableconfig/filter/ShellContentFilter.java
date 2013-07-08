@@ -19,15 +19,26 @@ public class ShellContentFilter implements ContentFilter
     return contentName.endsWith(".sh");
   }
 
-  @Override
+  //@Override
   public void filter(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws IOException
   {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+    filter(new InputStreamReader(inputStream), new OutputStreamWriter(outputStream), replaces);
+  }
 
-    while (reader.ready())
+  @Override
+  public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
+  {
+    BufferedReader bufferedReader = new BufferedReader(reader);
+    BufferedWriter bufferedWriter = new BufferedWriter(writer);
+
+    while (bufferedReader.ready())
     {
-      String line = reader.readLine();
+      String line = bufferedReader.readLine();
+
+      if ( line == null )
+      {
+        break;
+      }
 
       for (Replace replace : replaces)
       {
@@ -53,11 +64,11 @@ public class ShellContentFilter implements ContentFilter
         }
       }
 
-      writer.write(line);
-      writer.newLine();
+      bufferedWriter.write(line);
+      bufferedWriter.newLine();
     }
 
-    writer.flush();
+    bufferedWriter.flush();
   }
 
 }

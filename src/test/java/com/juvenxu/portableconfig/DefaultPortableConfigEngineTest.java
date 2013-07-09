@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author juven
  */
-public class DefaultPortableConfigEngineTest extends PlexusTestCase
+public class DefaultPortableConfigEngineTest extends DefaultPortableConfigEngineTestBase
 {
 
   private PortableConfigEngine sut;
@@ -94,29 +94,10 @@ public class DefaultPortableConfigEngineTest extends PlexusTestCase
     assertEquals("80", getResultXmlEntry("server.xml", "/server/port"));
   }
 
-  private String getResultXmlEntry(String xmlFile, String xpath) throws JDOMException, IOException
-  {
-    SAXBuilder saxBuilder = new SAXBuilder();
-
-    Document doc = saxBuilder.build(this.getClass().getResourceAsStream("/to_be_replaced/" + xmlFile));
-
-    XPathFactory xPathFactory = XPathFactory.instance();
-    XPathExpression xPathExpression = xPathFactory.compile(xpath);
-    List<Element> elements =  xPathExpression.evaluate(doc);
-
-    return elements.get(0).getValue();
-  }
-
   private void applyPortableConfigXml(String configXml) throws URISyntaxException, IOException
   {
     DataSource portableConfig = new FileDataSource( new File( this.getClass().getResource("/portable_config/" + configXml).toURI()));
     sut.replaceDirectory(portableConfig, targetDirectory);
   }
 
-  private Properties getResultProperties(String propertiesFile) throws IOException
-  {
-    Properties result = new Properties();
-    result.load(this.getClass().getResourceAsStream("/to_be_replaced/" + propertiesFile));
-    return result;
-  }
 }

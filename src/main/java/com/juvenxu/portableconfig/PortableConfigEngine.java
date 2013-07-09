@@ -12,6 +12,7 @@ public interface PortableConfigEngine
 {
   /**
    * For each file in the directory, do replace
+   *
    * @param portableConfig
    * @param directory
    */
@@ -19,8 +20,11 @@ public interface PortableConfigEngine
 
   /**
    * This will generate a new temporary jar with filtered content, then replace the old one
+   *
    * @param portableConfig
    * @param jar
    */
   public void replaceJar(DataSource portableConfig, File jar) throws IOException;
+
+  public void replace(DataSource portableConfig, File directory, File source) throws IOException;
 }

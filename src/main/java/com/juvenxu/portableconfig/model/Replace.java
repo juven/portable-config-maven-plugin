@@ -9,7 +9,7 @@ public class Replace
 
   private final String xpath;
 
-  private final String value;
+  private String value;
 
   public Replace(String key, String xpath, String value)
   {
@@ -26,6 +26,11 @@ public class Replace
   public String getValue()
   {
     return value;
+  }
+
+  public void setValue(String value)
+  {
+    this.value = value;
   }
 
   public String getXpath()

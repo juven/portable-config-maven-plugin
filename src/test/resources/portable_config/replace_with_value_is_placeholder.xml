@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portable-config>
+    <config-file path="db.properties">
+        <replace key="mysql.host">${product.mysql.host}</replace>
+    </config-file>
+    <config-file path="server.properties">
+        <replace key="server.port">${product.server.port}</replace>
+    </config-file>
+</portable-config>

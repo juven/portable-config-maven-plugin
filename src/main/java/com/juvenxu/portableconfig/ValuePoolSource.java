@@ -10,5 +10,5 @@ import java.io.IOException;
  */
 public interface ValuePoolSource
 {
-  ValuePool build(DataSource dataSource) throws IOException;
+  ValuePool load(DataSource dataSource) throws IOException;
 }

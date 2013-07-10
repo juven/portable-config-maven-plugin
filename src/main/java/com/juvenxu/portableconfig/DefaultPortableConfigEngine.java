@@ -34,7 +34,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   @Requirement(role = AbstractTraverser.class, hint = "directory")
   private AbstractTraverser directoryTraverser;
 
-  @Requirement(role = ValuePoolSource.class, hint = "file")
+  @Requirement(role = ValuePoolSource.class, hint = "default")
   private ValuePoolSource valuePoolSource;
 
   @Override
@@ -62,7 +62,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   {
     PortableConfig config = buildPortableConfig(portableConfig);
 
-    ValuePool valuePool = valuePoolSource.build(new FileDataSource(source));
+    ValuePool valuePool = valuePoolSource.load(new FileDataSource(source));
 
     fill(config, valuePool);
 

@@ -13,11 +13,11 @@ import java.util.List;
 /**
  * @author juven
  */
-@Component(role = ValuePoolSource.class, hint = "file")
-public class ValuePoolSourceFileImpl implements ValuePoolSource
+@Component(role = ValuePoolSource.class, hint = "default")
+public class ValuePoolSourceDefaultImpl implements ValuePoolSource
 {
   @Override
-  public ValuePool build(DataSource dataSource) throws IOException
+  public ValuePool load(DataSource dataSource) throws IOException
   {
     ValuePool result = new ValuePool();
 
@@ -45,7 +45,10 @@ public class ValuePoolSourceFileImpl implements ValuePoolSource
         {
           int pos = line.indexOf("=");
 
-          result.put(line.substring(0, pos), line.substring(pos + 1));
+          String key = line.substring(0, pos).trim();
+          String value = line.substring(pos + 1).trim();
+
+          result.put(key, value);
         }
       }
     } finally

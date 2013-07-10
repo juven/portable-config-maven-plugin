@@ -11,20 +11,13 @@ import java.io.InputStream;
 public interface PortableConfigEngine
 {
   /**
-   * For each file in the directory, do replace
-   *
+   * Replace file with replaces defined in portableConfig, if file is a directory, traverse the directory;
+   * if the file is a jar/war, traverse it; other format is not supported
    * @param portableConfig
-   * @param directory
+   * @param file
+   * @throws IOException
    */
-  public void replaceDirectory(DataSource portableConfig, File directory) throws IOException;
+  public void replace(DataSource portableConfig, File file) throws IOException;
 
-  /**
-   * This will generate a new temporary jar with filtered content, then replace the old one
-   *
-   * @param portableConfig
-   * @param jar
-   */
-  public void replaceJar(DataSource portableConfig, File jar) throws IOException;
-
-  public void replace(DataSource portableConfig, File directory, File source) throws IOException;
+  public void replace(DataSource portableConfig, File file, File source) throws IOException;
 }

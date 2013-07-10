@@ -38,15 +38,23 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
   private ValuePoolSource valuePoolSource;
 
   @Override
-  public void replaceDirectory(DataSource portableConfigDataSource, File directory) throws IOException
+  public void replace(DataSource portableConfig, File file) throws IOException
   {
-    directoryTraverser.traverse(buildPortableConfig(portableConfigDataSource), directory);
+    PortableConfig config = buildPortableConfig(portableConfig);
+
+    doReplace(config, file);
   }
 
-  @Override
-  public void replaceJar(DataSource portableConfigDataSource, File jar) throws IOException
+  private void doReplace(PortableConfig config, File file) throws IOException
   {
-    jarTraverser.traverse(buildPortableConfig(portableConfigDataSource), jar);
+    if (file.isFile())
+    {
+      jarTraverser.traverse(config, file);
+    }
+    else
+    {
+      directoryTraverser.traverse(config, file);
+    }
   }
 
   @Override
@@ -58,14 +66,7 @@ public class DefaultPortableConfigEngine implements PortableConfigEngine
 
     fill(config, valuePool);
 
-    if (file.isDirectory())
-    {
-      directoryTraverser.traverse(config, file);
-    }
-    else if (file.isFile())
-    {
-      jarTraverser.traverse(config, file);
-    }
+    doReplace(config, file);
   }
 
   private void fill(PortableConfig config, ValuePool valuePool)

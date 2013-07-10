@@ -36,14 +36,7 @@ public class PortableConfigCli
     PlexusContainer container = new DefaultPlexusContainer();
     PortableConfigEngine engine = container.lookup(PortableConfigEngine.class);
 
-    if (target.isDirectory())
-    {
-      engine.replaceDirectory(new FileDataSource(config), target);
-    }
-    else if (target.isFile())
-    {
-      engine.replaceJar(new FileDataSource(config), target);
-    }
+    engine.replace(new FileDataSource(config), target);
   }
 
   private static void verify(File target, File config)
@@ -76,10 +69,12 @@ public class PortableConfigCli
     Options options = new Options();
 
     Option c = OptionBuilder.withArgName("portableConfigFile").hasArg().withDescription("the portable config file").create("c");
+    Option s = OptionBuilder.withArgName("sourceFile").hasArg().withDescription("the source file of config values").create("s");
     Option h = OptionBuilder.withDescription("display help").create("h");
 
     options.addOption(c);
     options.addOption(h);
+    options.addOption(s);
     return options;
   }
 

@@ -97,7 +97,7 @@ public class DefaultPortableConfigEngineTest extends DefaultPortableConfigEngine
   private void applyPortableConfigXml(String configXml) throws URISyntaxException, IOException
   {
     DataSource portableConfig = new FileDataSource( new File( this.getClass().getResource("/portable_config/" + configXml).toURI()));
-    sut.replaceDirectory(portableConfig, targetDirectory);
+    sut.replace(portableConfig, targetDirectory);
   }
 
 }

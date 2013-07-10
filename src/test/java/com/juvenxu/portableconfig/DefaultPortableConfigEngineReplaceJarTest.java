@@ -38,7 +38,7 @@ public class DefaultPortableConfigEngineReplaceJarTest extends PlexusTestCase
     DataSource potableConfigDataSource = new FileDataSource(new File(this.getClass().getResource("/portable_config/" + "replace_jar_web_xml.xml").toURI()));
     File jar = new File(this.getClass().getResource("/to_be_replaced/" + "portableconfig-demo-1.0-SNAPSHOT.war").toURI());
 
-    sut.replaceJar(potableConfigDataSource, jar);
+    sut.replace(potableConfigDataSource, jar);
 
     String entryName = "WEB-INF/classes/db.properties";
 

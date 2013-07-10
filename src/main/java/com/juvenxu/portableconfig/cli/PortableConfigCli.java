@@ -4,12 +4,9 @@ import com.juvenxu.portableconfig.PortableConfigEngine;
 import org.apache.commons.cli.*;
 import org.codehaus.plexus.DefaultPlexusContainer;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import javax.activation.FileDataSource;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * @author juven
@@ -28,15 +25,20 @@ public class PortableConfigCli
 
     verify(target, config);
 
-    run(target, config);
-  }
-
-  private static void run(File target, File config) throws PlexusContainerException, ComponentLookupException, IOException
-  {
     PlexusContainer container = new DefaultPlexusContainer();
     PortableConfigEngine engine = container.lookup(PortableConfigEngine.class);
 
-    engine.replace(new FileDataSource(config), target);
+    if (cmd.hasOption("s") && cmd.getOptionValue("s") != null)
+    {
+      File source = new File(cmd.getOptionValue("s"));
+
+      engine.replace(new FileDataSource(config), target, source);
+    }
+    else
+    {
+      engine.replace(new FileDataSource(config), target);
+    }
+
   }
 
   private static void verify(File target, File config)

@@ -4,11 +4,14 @@ import com.juvenxu.portableconfig.ValuePoolSource;
 import com.juvenxu.portableconfig.model.Replace;
 import com.juvenxu.portableconfig.model.ValuePool;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.codehaus.plexus.component.annotations.Component;
 
 import javax.activation.DataSource;
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author juven
@@ -20,6 +23,61 @@ public class ValuePoolSourceDefaultImpl implements ValuePoolSource
   public ValuePool load(DataSource dataSource) throws IOException
   {
     ValuePool result = new ValuePool();
+
+    Map<String, String> rawValues = loadRawValues(dataSource);
+
+    Map<String, String> cleanValues = new HashMap<String, String>();
+
+    processReferences(cleanValues, rawValues);
+
+    result.putAll(cleanValues);
+
+    return result;
+  }
+
+  private void processReferences(Map<String, String> cleanValues, Map<String, String> rawValues)
+  {
+    if (rawValues.isEmpty())
+    {
+      return;
+    }
+
+    int cleanValuesBefore = cleanValues.size();
+
+    for (Map.Entry<String, String> entry : rawValues.entrySet())
+    {
+      StrSubstitutor strSubstitutor = new StrSubstitutor(cleanValues);
+      entry.setValue(strSubstitutor.replace(entry.getValue()));
+    }
+
+    for (Map.Entry<String, String> entry : rawValues.entrySet())
+    {
+      if (!entry.getValue().contains("${"))
+      {
+        cleanValues.put(entry.getKey(), entry.getValue());
+      }
+    }
+
+    for (String key : cleanValues.keySet())
+    {
+      rawValues.remove(key);
+    }
+
+    int cleanValuesAfter = cleanValues.size();
+
+    if (cleanValuesBefore == cleanValuesAfter)
+    {
+      cleanValues.putAll(rawValues);
+
+      return;
+    }
+
+    processReferences(cleanValues, rawValues);
+  }
+
+  private Map<String, String> loadRawValues(DataSource dataSource) throws IOException
+  {
+    Map<String, String> values = new HashMap<String, String>();
 
     InputStream inputStream = dataSource.getInputStream();
 
@@ -48,7 +106,7 @@ public class ValuePoolSourceDefaultImpl implements ValuePoolSource
           String key = line.substring(0, pos).trim();
           String value = line.substring(pos + 1).trim();
 
-          result.put(key, value);
+          values.put(key, value);
         }
       }
     } finally
@@ -56,7 +114,7 @@ public class ValuePoolSourceDefaultImpl implements ValuePoolSource
       IOUtils.closeQuietly(inputStream);
     }
 
-    return result;
+    return values;
   }
 
 }

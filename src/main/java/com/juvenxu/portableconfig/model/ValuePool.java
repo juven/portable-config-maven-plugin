@@ -31,5 +31,8 @@ public class ValuePool
     return values.containsKey(key);
   }
 
-
+  public void putAll(Map<? extends String, ? extends String> m)
+  {
+    values.putAll(m);
+  }
 }

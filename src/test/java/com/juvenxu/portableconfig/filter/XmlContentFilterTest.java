@@ -2,10 +2,8 @@ package com.juvenxu.portableconfig.filter;
 
 import com.juvenxu.portableconfig.ContentFilter;
 import com.juvenxu.portableconfig.model.Replace;
-import org.codehaus.plexus.PlexusTestCase;
 import org.junit.Assert;
 
-import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,10 +12,8 @@ import static org.hamcrest.CoreMatchers.containsString;
 /**
  * @author juven
  */
-public class XmlContentFilterTest extends PlexusTestCase
+public class XmlContentFilterTest extends AbstractContentFilterTest
 {
-  private ContentFilter sut;
-
   @Override
   public void setUp() throws Exception
   {
@@ -34,11 +30,7 @@ public class XmlContentFilterTest extends PlexusTestCase
             "</server>";
     List<Replace> replaces = new ArrayList<Replace>();
 
-    StringWriter writer = new StringWriter();
-
-    sut.filter(new StringReader(input), writer, replaces);
-
-    String output = writer.toString();
+    String output = doFilter(input, replaces);
     Assert.assertThat(output, containsString("<server>"));
     Assert.assertThat(output, containsString("<host>localhost</host>"));
     Assert.assertThat(output, containsString("<port>8080</port>"));
@@ -56,11 +48,7 @@ public class XmlContentFilterTest extends PlexusTestCase
 
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace(null, "/server/port", "80"));
-    StringWriter writer = new StringWriter();
-
-    sut.filter(new StringReader(input), writer, replaces);
-
-    String output = writer.toString();
+    String output = doFilter(input, replaces);
     Assert.assertThat(output, containsString("<port>80</port>"));
   }
 
@@ -78,11 +66,7 @@ public class XmlContentFilterTest extends PlexusTestCase
 
     List<Replace> replaces = new ArrayList<Replace>();
     replaces.add(new Replace(null, "/web-app/display-name", "staging"));
-    StringWriter writer = new StringWriter();
-
-    sut.filter(new StringReader(input), writer, replaces);
-
-    String output = writer.toString();
+    String output = doFilter(input, replaces);
     Assert.assertThat(output, containsString("<display-name>staging</display-name>"));
   }
 }

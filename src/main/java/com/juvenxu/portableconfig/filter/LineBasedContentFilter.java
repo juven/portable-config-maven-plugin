@@ -2,7 +2,6 @@ package com.juvenxu.portableconfig.filter;
 
 import com.juvenxu.portableconfig.ContentFilter;
 import com.juvenxu.portableconfig.model.Replace;
-import org.codehaus.plexus.component.annotations.Component;
 
 import java.io.*;
 import java.util.List;
@@ -10,14 +9,9 @@ import java.util.List;
 /**
  * @author juven
  */
-@Component(role = ContentFilter.class, hint = "conf")
-public class ConfContentFilter implements ContentFilter
+public abstract class LineBasedContentFilter implements ContentFilter
 {
-  @Override
-  public boolean accept(String contentName)
-  {
-    return contentName.endsWith(".conf");
-  }
+  protected abstract String filterLine(String line, List<Replace> replaces);
 
   @Override
   public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
@@ -39,29 +33,5 @@ public class ConfContentFilter implements ContentFilter
     }
 
     bufferedWriter.flush();
-  }
-
-  private String filterLine(String line, List<Replace> replaces)
-  {
-    if (line.startsWith("#"))
-    {
-      return line;
-    }
-
-    if (line.contains("="))
-    {
-      int pos = line.indexOf("=");
-      String key = line.substring(0, pos);
-
-      for (Replace replace : replaces)
-      {
-        if (replace.getKey().equals(key))
-        {
-          return key + "=" + replace.getValue();
-        }
-      }
-    }
-
-    return line;
   }
 }

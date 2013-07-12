@@ -11,7 +11,7 @@ import java.util.List;
  * @author juven
  */
 @Component(role = ContentFilter.class, hint = "shell")
-public class ShellContentFilter implements ContentFilter
+public class ShellContentFilter extends LineBasedContentFilter
 {
   @Override
   public boolean accept(String contentName)
@@ -20,49 +20,27 @@ public class ShellContentFilter implements ContentFilter
   }
 
   @Override
-  public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
+  protected String filterLine(String line, List<Replace> replaces)
   {
-    BufferedReader bufferedReader = new BufferedReader(reader);
-    BufferedWriter bufferedWriter = new BufferedWriter(writer);
-
-    while (bufferedReader.ready())
+    for (Replace replace : replaces)
     {
-      String line = bufferedReader.readLine();
-
-      if ( line == null )
+      if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "=\"[^\"=]*\""))
       {
-        break;
+        return line.replaceAll("=\"[^\"=]*\"", "=\"" + replace.getValue() + "\"");
       }
 
-      for (Replace replace : replaces)
+      if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "='[^'=]*'"))
       {
-        if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "=\"[^\"=]*\""))
-        {
-          line = line.replaceAll("=\"[^\"=]*\"", "=\"" + replace.getValue() + "\"");
-
-          break;
-        }
-
-        if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "='[^'=]*'"))
-        {
-          line = line.replaceAll("='[^'=]*'", "='" + replace.getValue() + "'");
-
-          break;
-        }
-
-        if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "=[^'\"=]*"))
-        {
-          line = line.replaceAll("=[^'\"=]*", "=" + replace.getValue());
-
-          break;
-        }
+        return line.replaceAll("='[^'=]*'", "='" + replace.getValue() + "'");
       }
 
-      bufferedWriter.write(line);
-      bufferedWriter.newLine();
+      if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "=[^'\"=]*"))
+      {
+        return  line.replaceAll("=[^'\"=]*", "=" + replace.getValue());
+      }
     }
 
-    bufferedWriter.flush();
+    return line;
   }
 
 }

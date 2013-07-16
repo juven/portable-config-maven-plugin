@@ -11,7 +11,7 @@ import java.util.List;
  * @author juven
  */
 @Component(role = ContentFilter.class, hint = "conf")
-public class ConfContentFilter implements ContentFilter
+public class ConfContentFilter extends LineBasedContentFilter
 {
   @Override
   public boolean accept(String contentName)
@@ -20,28 +20,7 @@ public class ConfContentFilter implements ContentFilter
   }
 
   @Override
-  public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
-  {
-    BufferedReader bufferedReader = new BufferedReader(reader);
-    BufferedWriter bufferedWriter = new BufferedWriter(writer);
-
-    while (bufferedReader.ready())
-    {
-      String line = bufferedReader.readLine();
-
-      if (line == null)
-      {
-        break;
-      }
-
-      bufferedWriter.write(filterLine(line, replaces));
-      bufferedWriter.newLine();
-    }
-
-    bufferedWriter.flush();
-  }
-
-  private String filterLine(String line, List<Replace> replaces)
+  protected String filterLine(String line, List<Replace> replaces)
   {
     if (line.startsWith("#"))
     {

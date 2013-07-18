@@ -69,4 +69,18 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     String output = doFilter(input, replaces);
     Assert.assertThat(output, containsString("<display-name>staging</display-name>"));
   }
+
+  public void testFilteringXmlXPathAttribute() throws Exception
+  {
+    String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<server region=\"zh\">\n" +
+            "  <host>localhost</host>\n" +
+            "</server>";
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "/server/@region", "us"));
+    String output = doFilter(input, replaces);
+    Assert.assertThat(output, containsString("<server region=\"us\">"));
+  }
+
 }

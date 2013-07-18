@@ -4,10 +4,7 @@ import com.juvenxu.portableconfig.ContentFilter;
 import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.StringUtils;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
+import org.jdom2.*;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
@@ -68,9 +65,20 @@ public class XmlContentFilter implements ContentFilter
         xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, rootNamespace);
       }
 
-      for (Element element : (List<Element>) xPathExpression.evaluate(doc))
+      for (Object obj : xPathExpression.evaluate(doc))
       {
-        element.setText(replace.getValue());
+        if (obj instanceof Element)
+        {
+          ((Element) obj).setText(replace.getValue());
+        }
+        else if (obj instanceof Attribute)
+        {
+          ((Attribute) obj).setValue(replace.getValue());
+        }
+        else
+        {
+          throw new IOException("Unsupported xpath result object: " + obj.getClass().toString());
+        }
       }
     }
 

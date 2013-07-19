@@ -12,7 +12,5 @@ public interface ContentFilter
 {
   boolean accept(String contentName);
 
-  //void filter(InputStream inputStream, OutputStream outputStream, List<Replace> replaces) throws IOException;
-
   void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException;
 }

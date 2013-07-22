@@ -83,4 +83,22 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     Assert.assertThat(output, containsString("<server region=\"us\">"));
   }
 
+  public void testFilteringXmlElementWithAttribute() throws Exception
+  {
+    String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<server region=\"zh\">\n" +
+            "  <host>localhost</host>\n" +
+            "  <host id=\"to_be_replaced\">localhost</host>\n" +
+            "</server>";
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "//host[@id='to_be_replaced']", "192.168.1.1"));
+
+
+    String output = doFilter(input, replaces);
+    Assert.assertThat(output, containsString("<host>localhost</host>"));
+    Assert.assertThat(output, containsString("<host id=\"to_be_replaced\">192.168.1.1</host>"));
+  }
+
+
 }

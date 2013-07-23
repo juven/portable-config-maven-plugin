@@ -21,6 +21,9 @@ import java.util.List;
 @Component(role = ContentFilter.class, hint = "xml")
 public class XmlContentFilter implements ContentFilter
 {
+
+  private static final String CUSTOMIZED_NAMESPACE_PREFIX = "portableconfig";
+
   @Override
   public boolean accept(String contentName)
   {
@@ -58,9 +61,9 @@ public class XmlContentFilter implements ContentFilter
       }
       else
       {
-        String customizedNamespacePrefix = "portableconfig";
-        Namespace rootNamespace = Namespace.getNamespace(customizedNamespacePrefix, doc.getRootElement().getNamespaceURI());
-        String expression = replace.getXpath().replace("/", "/" + customizedNamespacePrefix + ":");
+        Namespace rootNamespace = Namespace.getNamespace(CUSTOMIZED_NAMESPACE_PREFIX, doc.getRootElement().getNamespaceURI());
+
+        String expression = addCustomizedNamespacePrefix(CUSTOMIZED_NAMESPACE_PREFIX, replace.getXpath());
 
         xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, rootNamespace);
       }
@@ -85,5 +88,10 @@ public class XmlContentFilter implements ContentFilter
     XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 
     xmlOutputter.output(doc, writer);
+  }
+
+  private String addCustomizedNamespacePrefix(String customizedNamespacePrefix, String expression)
+  {
+    return expression.replaceAll("(/+)", "$1" + customizedNamespacePrefix + ":");
   }
 }

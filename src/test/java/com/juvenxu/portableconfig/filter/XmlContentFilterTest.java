@@ -101,4 +101,29 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
   }
 
 
+  public void testFilteringXmlWithNameSpaceAndXPathElementWithAttribute() throws Exception
+  {
+
+    String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<web-app xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://java.sun.com/xml/ns/javaee\"\n" +
+            "         xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd\"\n" +
+            "         version=\"2.5\">\n" +
+            "    <display-name>test</display-name>\n" +
+            "    <servlet>\n" +
+            "        <servlet-name>BarServlet</servlet-name>\n" +
+            "        <servlet-class>org.foo.BarServlet</servlet-class>\n" +
+            "        <init-param>\n" +
+            "            <param-name>debug</param-name>\n" +
+            "            <param-value id=\"DebugMode\">true</param-value>\n" +
+            "        </init-param>\n" +
+            "    </servlet>" +
+            "</web-app>\n";
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "//param-value[@id='DebugMode']", "false"));
+
+    String output = doFilter(input, replaces);
+    Assert.assertThat(output, containsString("<param-value id=\"DebugMode\">false</param-value>" ));
+  }
+
 }

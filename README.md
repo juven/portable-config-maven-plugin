@@ -56,7 +56,7 @@ database.jdbc.password=dev_pwd
      <plugin>
        <groupId>com.juvenxu.portable-config-maven-plugin</groupId>
        <artifactId>portable-config-maven-plugin</artifactId>
-       <version>1.0.1</version>
+       <version>1.1.2</version>
          <executions>
            <execution>
              <goals>

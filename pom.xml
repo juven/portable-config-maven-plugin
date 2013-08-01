@@ -9,7 +9,7 @@
 
     <groupId>com.juvenxu.portable-config-maven-plugin</groupId>
     <artifactId>portable-config-maven-plugin</artifactId>
-    <version>1.1.3-SNAPSHOT</version>
+    <version>1.1.3</version>
     <packaging>maven-plugin</packaging>
 
     <name>Portable Config Maven Plugin</name>

@@ -105,6 +105,24 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
 
     Assert.assertThat(output, containsString("<property name=\"newjndi\" value=\"java:jboss/TransactionManager\" />" ));
   }
+  
+  public void testFilteringXmlXPathAttributeWithDOCTYPE() throws Exception
+  {
+    String input = "<?xml version='1.0' encoding='UTF-8'?>"
+    		+ "<!DOCTYPE hibernate-configuration PUBLIC "
+    		+ "\"-//Hibernate/Hibernate Configuration DTD 3.0//EN\" "
+    		+ "\"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd\">"
+    		+ "<hibernate-configuration>	"
+    		+ "<session-factory>	  "
+    		+ "<property name=\"hibernate.connection.datasource\">java:jboss/datasources/MAYIDS</property>	"
+    		+ "</session-factory></hibernate-configuration>";
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "//property[@name='hibernate.connection.datasource']", "newdatasource"));
+    String output = doFilter(input, replaces);
+
+    Assert.assertThat(output, containsString("<property name=\"hibernate.connection.datasource\">newdatasource</property>" ));
+  }
 
   public void testFilteringXmlElementWithAttribute() throws Exception
   {

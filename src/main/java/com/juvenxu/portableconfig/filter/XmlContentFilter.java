@@ -1,19 +1,27 @@
 package com.juvenxu.portableconfig.filter;
 
-import com.juvenxu.portableconfig.ContentFilter;
-import com.juvenxu.portableconfig.model.Replace;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.List;
+
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.StringUtils;
-import org.jdom2.*;
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.input.SAXBuilder;
+import org.jdom2.input.sax.XMLReaders;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 
-import java.io.*;
-import java.util.List;
+import com.juvenxu.portableconfig.ContentFilter;
+import com.juvenxu.portableconfig.model.Replace;
 
 /**
  * @author juven
@@ -34,11 +42,15 @@ public class XmlContentFilter implements ContentFilter
   public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
   {
     SAXBuilder saxBuilder = new SAXBuilder();
-
     Document doc = null;
 
     try
     {
+    	//ignore dtd validate
+    	saxBuilder.setXMLReaderFactory(XMLReaders.NONVALIDATING);
+      saxBuilder.setFeature("http://xml.org/sax/features/validation", false);
+      saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+      saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
       doc = saxBuilder.build(reader);
     }
     catch (JDOMException e)

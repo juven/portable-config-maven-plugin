@@ -83,6 +83,29 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     Assert.assertThat(output, containsString("<server region=\"us\">"));
   }
 
+
+  public void testFilteringXmlXPathAttributeWithNameSpace() throws Exception
+  {
+    String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+            + "<beans "
+            + "xmlns=\"http://www.springframework.org/schema/beans\"\n"
+            + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+            + "xsi:schemaLocation=\"http://www.springframework.org/schema/beans\n"
+            + "http://www.springframework.org/schema/beans/spring-beans.xsd\""
+            +">"
+            + "<bean id=\"transactionManager\" class=\"org.springframework.jndi.JndiObjectFactoryBean\">\n"
+            + "<property name=\"jndiName\" value=\"java:jboss/TransactionManager\"/>\n"
+            + "<property name=\"resourceRef\" value=\"true\" />\n"
+            + "</bean>\n"
+            + "</beans>";
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "//property[@name='jndiName']/@name", "newjndi"));
+    String output = doFilter(input, replaces);
+
+    Assert.assertThat(output, containsString("<property name=\"newjndi\" value=\"java:jboss/TransactionManager\" />" ));
+  }
+
   public void testFilteringXmlElementWithAttribute() throws Exception
   {
     String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

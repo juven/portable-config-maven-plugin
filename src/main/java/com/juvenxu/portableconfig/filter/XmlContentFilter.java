@@ -92,6 +92,6 @@ public class XmlContentFilter implements ContentFilter
 
   private String addCustomizedNamespacePrefix(String customizedNamespacePrefix, String expression)
   {
-    return expression.replaceAll("(/+)", "$1" + customizedNamespacePrefix + ":");
+    return expression.replaceAll("(/+)([^@/]+)", "$1" + customizedNamespacePrefix + ":" + "$2");
   }
 }

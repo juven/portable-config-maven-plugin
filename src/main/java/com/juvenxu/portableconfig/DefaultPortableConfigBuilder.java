@@ -3,6 +3,8 @@ package com.juvenxu.portableconfig;
 import com.juvenxu.portableconfig.model.ConfigFile;
 import com.juvenxu.portableconfig.model.PortableConfig;
 import com.juvenxu.portableconfig.model.Replace;
+
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -33,7 +35,10 @@ public class DefaultPortableConfigBuilder implements PortableConfigBuilder
       for (Element configFileElement : rootElement.getChildren())
       {
         ConfigFile configFile = new ConfigFile(configFileElement.getAttribute("path").getValue());
-
+        //if set configFile type
+        String type = configFileElement.getAttributeValue("type");
+        configFile.setType(type);
+        
         for (Element replaceElement : configFileElement.getChildren("replace"))
         {
           if (replaceElement.getAttribute("key") != null)

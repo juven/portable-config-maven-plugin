@@ -41,17 +41,11 @@ public class XmlContentFilter implements ContentFilter
   @Override
   public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
   {
-    SAXBuilder saxBuilder = new SAXBuilder();
     Document doc = null;
 
     try
     {
-    	//ignore dtd validate
-    	saxBuilder.setXMLReaderFactory(XMLReaders.NONVALIDATING);
-      saxBuilder.setFeature("http://xml.org/sax/features/validation", false);
-      saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-      saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-      doc = saxBuilder.build(reader);
+      doc = createDTDUnawareSaxBuilder().build(reader);
     }
     catch (JDOMException e)
     {
@@ -100,6 +94,18 @@ public class XmlContentFilter implements ContentFilter
     XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 
     xmlOutputter.output(doc, writer);
+  }
+
+  private SAXBuilder createDTDUnawareSaxBuilder()
+  {
+    SAXBuilder saxBuilder = new SAXBuilder();
+
+    // http://xerces.apache.org/xerces2-j/features.html
+    saxBuilder.setXMLReaderFactory(XMLReaders.NONVALIDATING);
+    saxBuilder.setFeature("http://xml.org/sax/features/validation", false);
+    saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+    saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+    return saxBuilder;
   }
 
   private String addCustomizedNamespacePrefix(String customizedNamespacePrefix, String expression)

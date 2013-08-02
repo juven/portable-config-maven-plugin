@@ -46,7 +46,6 @@ public abstract class AbstractTraverser extends AbstractLogEnabled
   protected ContentFilter getContentFilter(final ConfigFile configFile)
   {
   	String contentType = configFile.getType();
-  	System.out.println("--------------"+contentType);
   	String contentName = configFile.getPath();
     for (ContentFilter contentFilter : contentFilters)
     {

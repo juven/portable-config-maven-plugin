@@ -4,6 +4,7 @@ import com.juvenxu.portableconfig.model.ConfigFile;
 import com.juvenxu.portableconfig.model.PortableConfig;
 import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.util.StringUtils;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -32,7 +33,18 @@ public class DefaultPortableConfigBuilder implements PortableConfigBuilder
 
       for (Element configFileElement : rootElement.getChildren())
       {
-        ConfigFile configFile = new ConfigFile(configFileElement.getAttribute("path").getValue());
+
+        ConfigFile configFile = null;
+
+        if ( configFileElement.getAttribute("type") != null &&
+                StringUtils.isNotEmpty(configFileElement.getAttribute("type").getValue()))
+        {
+          configFile = new ConfigFile(configFileElement.getAttribute("path").getValue(), configFileElement.getAttribute("type").getValue());
+        }
+        else
+        {
+          configFile = new ConfigFile(configFileElement.getAttribute("path").getValue());
+        }
 
         for (Element replaceElement : configFileElement.getChildren("replace"))
         {

@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface ContentFilter
 {
-  boolean accept(String contentName);
+  boolean accept(String contentType);
 
   void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException;
 }

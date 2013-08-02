@@ -15,9 +15,9 @@ import java.util.Properties;
 public class PropertiesContentFilter extends LineBasedContentFilter
 {
   @Override
-  public boolean accept(String contentName)
+  public boolean accept(String contentType)
   {
-    return contentName.endsWith(".properties");
+    return ".properties".equals(contentType);
   }
 
   @Override

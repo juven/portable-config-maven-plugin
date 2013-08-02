@@ -18,16 +18,16 @@ public abstract class AbstractTraverser extends AbstractLogEnabled
 
   public abstract void traverse(PortableConfig portableConfig, File file) throws IOException;
 
-  protected boolean hasContentFilter(final String contentName)
+  protected boolean hasContentFilter(final String contentType)
   {
-    return getContentFilter(contentName) != null;
+    return getContentFilter(contentType) != null;
   }
 
-  protected ContentFilter getContentFilter(final String contentName)
+  protected ContentFilter getContentFilter(final String contentType)
   {
     for (ContentFilter contentFilter : contentFilters)
     {
-      if (contentFilter.accept(contentName))
+      if (contentFilter.accept(contentType))
       {
         return contentFilter;
       }

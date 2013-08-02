@@ -33,9 +33,9 @@ public class XmlContentFilter implements ContentFilter
   private static final String CUSTOMIZED_NAMESPACE_PREFIX = "portableconfig";
 
   @Override
-  public boolean accept(String contentName)
+  public boolean accept(String contentType)
   {
-    return contentName.endsWith(".xml");
+    return (".xml").equals(contentType);
   }
 
   @Override

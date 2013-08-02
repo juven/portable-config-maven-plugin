@@ -56,6 +56,16 @@ public class DefaultPortableConfigEngineTest extends DefaultPortableConfigEngine
     assertEquals("test", result.getProperty("mysql.password"));
   }
 
+  public void test_GIVEN_portable_config_replacing_an_ini_file_but_has_type_properties_WHEN_run_engine_THEN_properties_should_be_replaced() throws Exception
+  {
+    applyPortableConfigXml("replace_ini_but_has_type_properties.xml");
+
+    Properties result = getResultProperties("db.ini");
+    assertEquals("192.168.1.100", result.getProperty("mysql.host"));
+    assertEquals("juven", result.getProperty("mysql.username"));
+    assertEquals("test", result.getProperty("mysql.password"));
+  }
+
 
   public void test_GIVEN_portable_config_replacing_two_properties_files_WHEN_run_engine_THEN_both_file_should_be_replaced() throws Exception
   {

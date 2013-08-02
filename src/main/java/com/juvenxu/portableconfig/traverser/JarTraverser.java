@@ -65,7 +65,7 @@ public class JarTraverser extends AbstractTraverser
           continue;
         }
 
-        if (!hasContentFilter(jarEntry.getName()))
+        if (!hasContentFilter(configFile.getType()))
         {
           continue;
         }
@@ -75,7 +75,7 @@ public class JarTraverser extends AbstractTraverser
         JarEntry filteredJarEntry = new JarEntry(jarEntry.getName());
         jarOutputStream.putNextEntry(filteredJarEntry);
 
-        ContentFilter contentFilter = getContentFilter(jarEntry.getName());
+        ContentFilter contentFilter = getContentFilter(configFile.getType());
 
         Reader reader = new InputStreamReader(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
         Writer writer = new OutputStreamWriter(jarOutputStream);

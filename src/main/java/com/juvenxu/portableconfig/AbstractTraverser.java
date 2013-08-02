@@ -1,6 +1,8 @@
 package com.juvenxu.portableconfig;
 
+import com.juvenxu.portableconfig.model.ConfigFile;
 import com.juvenxu.portableconfig.model.PortableConfig;
+
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -23,11 +25,33 @@ public abstract class AbstractTraverser extends AbstractLogEnabled
     return getContentFilter(contentName) != null;
   }
 
+  protected boolean hasContentFilter(final ConfigFile configFile)
+  {
+    return getContentFilter(configFile) != null;
+  }
+  
   protected ContentFilter getContentFilter(final String contentName)
   {
     for (ContentFilter contentFilter : contentFilters)
     {
       if (contentFilter.accept(contentName))
+      {
+        return contentFilter;
+      }
+    }
+
+    return null;
+  }
+  
+  protected ContentFilter getContentFilter(final ConfigFile configFile)
+  {
+  	String contentType = configFile.getType();
+  	System.out.println("--------------"+contentType);
+  	String contentName = configFile.getPath();
+    for (ContentFilter contentFilter : contentFilters)
+    {
+    	//support configure file type
+      if (contentFilter.accept(contentName)||contentFilter.accept("*."+contentType))
       {
         return contentFilter;
       }

@@ -9,7 +9,8 @@ import java.util.List;
 public class ConfigFile
 {
   private final String path;
-
+  private String type;
+  
   private List<Replace> replaces = new ArrayList<Replace>();
 
   public ConfigFile(String path)
@@ -17,7 +18,15 @@ public class ConfigFile
     this.path = path;
   }
 
-  public String getPath()
+  public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getPath()
   {
     return path;
   }

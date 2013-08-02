@@ -31,7 +31,7 @@ public class DirectoryTraverser extends AbstractTraverser
         continue;
       }
 
-      if (!hasContentFilter(configFile.getPath()))
+      if (!hasContentFilter(configFile))
       {
         getLogger().warn(String.format("Ignore replacing: %s", file.getPath()));
 
@@ -42,8 +42,8 @@ public class DirectoryTraverser extends AbstractTraverser
 
       File tmpTxt = File.createTempFile(Long.toString(System.nanoTime()), ".txt");
 
-      ContentFilter contentFilter = getContentFilter(configFile.getPath());
-
+      ContentFilter contentFilter = getContentFilter(configFile);
+      
       Reader reader = null;
 
       Writer writer = null;

@@ -3,6 +3,8 @@ package com.juvenxu.portableconfig.filter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.codehaus.plexus.component.annotations.Component;
@@ -65,13 +67,22 @@ public class XmlContentFilter implements ContentFilter
       {
         xPathExpression = xPathFactory.compile(replace.getXpath());
       }
+      else if (false)
+      {
+
+      }
       else
       {
         Namespace rootNamespace = Namespace.getNamespace(CUSTOMIZED_NAMESPACE_PREFIX, doc.getRootElement().getNamespaceURI());
 
+        List<Namespace> x = doc.getRootElement().getAdditionalNamespaces();
+        List<Namespace> allNS = new ArrayList<Namespace>();
+        allNS.add(rootNamespace);
+        allNS.addAll(x);
+
         String expression = addCustomizedNamespacePrefix(CUSTOMIZED_NAMESPACE_PREFIX, replace.getXpath());
 
-        xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, rootNamespace);
+        xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, allNS);
       }
 
       for (Object obj : xPathExpression.evaluate(doc))
@@ -110,6 +121,46 @@ public class XmlContentFilter implements ContentFilter
 
   private String addCustomizedNamespacePrefix(String customizedNamespacePrefix, String expression)
   {
-    return expression.replaceAll("(/+)([^@/]+)", "$1" + customizedNamespacePrefix + ":" + "$2");
+    StringBuffer result = new StringBuffer();
+
+    List<String> parts = Arrays.asList(expression.split("/"));
+
+    if ( expression.startsWith("//"))
+    {
+
+
+      parts = parts.subList( 1, parts.size());
+    }
+
+    for (String part : parts)
+    {
+      result.append("/");
+
+      if ( StringUtils.isEmpty(part))
+      {
+        continue;
+      }
+
+      if ( part.startsWith("@"))
+      {
+        result.append( part);
+      }
+      else if ( part.contains(":"))
+      {
+        result.append( part);
+      }
+      else
+      {
+        result.append(customizedNamespacePrefix);
+        result.append(":");
+        result.append(part);
+      }
+    }
+
+    //System.out.println(expression);
+    //System.out.println(result.toString());
+    return result.toString();
+
+    // return expression.replaceAll("(/+)([^@/:]+)", "$1" + customizedNamespacePrefix + ":" + "$2");
   }
 }

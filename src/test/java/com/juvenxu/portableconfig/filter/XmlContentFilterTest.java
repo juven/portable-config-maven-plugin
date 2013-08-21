@@ -167,4 +167,20 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     Assert.assertThat(output, containsString("<param-value id=\"DebugMode\">false</param-value>" ));
   }
 
+  public void testFilteringXmlWithNameSpaceAndReplaceWithOriginalNameSpacePrefix() throws Exception
+  {
+    String input = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<beans xmlns=\"http://www.springframework.org/schema/beans\" " +
+                   "xmlns:context=\"http://www.springframework.org/schema/context\" >\n" +
+            "<context:property-placeholder ignore-unresolvable=\"true\" local-override=\"true\" />\n" +
+            "</beans>\n";
+
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "//context:property-placeholder/@local-override", "false"));
+
+    String output = doFilter(input, replaces);
+    Assert.assertThat(output, containsString("<context:property-placeholder ignore-unresolvable=\"true\" local-override=\"false\""));
+  }
+
 }

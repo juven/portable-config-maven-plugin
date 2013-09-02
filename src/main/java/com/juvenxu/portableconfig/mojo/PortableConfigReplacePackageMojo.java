@@ -50,28 +50,38 @@ public class PortableConfigReplacePackageMojo extends AbstractMojo
       return;
     }
 
+    if (isSupported(packaging))
+    {
+      try
+      {
+        if (outputDirectory.exists() && outputDirectory.isDirectory())
+        {
+          getLog().info("Replacing: " + outputDirectory.getAbsolutePath());
 
-    if (!"war".equals(packaging))
+          portableConfigEngine.replace(new FileDataSource(portableConfig), outputDirectory);
+        }
+
+        getLog().info("Replacing: " + finalPackage.getAbsolutePath());
+
+        portableConfigEngine.replace(new FileDataSource(portableConfig), finalPackage);
+      }
+      catch (IOException e)
+      {
+        throw new MojoExecutionException("Error while replacing package", e);
+      }
+    }
+    else
     {
       getLog().info(String.format("Ignoring packaging %s", packaging));
 
       return;
     }
 
-    try
-    {
-      if (outputDirectory.exists() && outputDirectory.isDirectory())
-      {
-        getLog().info("Replacing: " + outputDirectory.getAbsolutePath());
-        portableConfigEngine.replace(new FileDataSource(portableConfig), outputDirectory);
-      }
 
-      portableConfigEngine.replace(new FileDataSource(portableConfig), finalPackage);
-    }
-    catch (IOException e)
-    {
-      throw new MojoExecutionException("Error while replacing package", e);
-    }
+  }
 
+  private boolean isSupported(String packaging)
+  {
+    return "war".equals(packaging) || "jar".equals(packaging);
   }
 }

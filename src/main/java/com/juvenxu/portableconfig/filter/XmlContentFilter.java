@@ -120,13 +120,6 @@ public class XmlContentFilter implements ContentFilter
         nsUrl = vn.toNormalizedString(i + 1);
         ap.declareXPathNameSpace(nsPrefix, nsUrl);
       }
-      else if (type == VTDNav.TOKEN_ATTR_VAL)
-      {
-      }
-      else
-      {
-        break;
-      }
       i++;
     }
   }

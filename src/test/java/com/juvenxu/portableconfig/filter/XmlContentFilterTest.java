@@ -105,7 +105,7 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
 
     Assert.assertThat(output, containsString("<property name=\"newjndi\" value=\"java:jboss/TransactionManager\"/>" ));
   }
-  
+
   public void testFilteringXmlXPathAttributeWithDOCTYPE() throws Exception
   {
     String input = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -181,6 +181,25 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
 
     String output = doFilter(input, replaces);
     Assert.assertThat(output, containsString("<context:property-placeholder ignore-unresolvable=\"true\" local-override=\"false\" />"));
+  }
+
+  public void testFilteringXmlWithNameSpaceAndReplaceWithMultiOriginalNameSpacePrefix() throws Exception
+  {
+    String input = "<bk:bookstore xmlns:bk=\"urn:xmlns:25hoursaday-com:bookstore\">\n" +
+            " <bk:book> \n" +
+            "    <bk:title>Lord of the Rings</bk:title> \n" +
+            "    <bk:author>J.R.R. Tolkien</bk:author>\n" +
+            "    <inv:inventory status=\"in-stock\" isbn=\"0345340426\" \n" +
+            "        xmlns:inv=\"urn:xmlns:25hoursaday-com:inventory-tracking\" />\n" +
+            " </bk:book> \n" +
+            "</bk:bookstore>";
+
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "//inv:inventory/@status", "none"));
+
+    String output = doFilter(input, replaces);
+    Assert.assertThat(output, containsString("<inv:inventory status=\"none\""));
   }
 
 }

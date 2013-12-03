@@ -14,7 +14,12 @@ public abstract class LineBasedContentFilter implements ContentFilter
   protected abstract String filterLine(String line, List<Replace> replaces);
 
   @Override
-  public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
+  public void filter(InputStream fileIS, OutputStream tmpOS, List<Replace> replaces) throws IOException
+  {
+    this.filter(new InputStreamReader(fileIS), new OutputStreamWriter(tmpOS), replaces);
+  }
+
+  protected void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
   {
     BufferedReader bufferedReader = new BufferedReader(reader);
     BufferedWriter bufferedWriter = new BufferedWriter(writer);

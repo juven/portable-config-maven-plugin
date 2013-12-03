@@ -77,9 +77,7 @@ public class JarTraverser extends AbstractTraverser
 
         ContentFilter contentFilter = getContentFilter(configFile.getType());
 
-        Reader reader = new InputStreamReader(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
-        Writer writer = new OutputStreamWriter(jarOutputStream);
-        contentFilter.filter(reader, writer, configFile.getReplaces());
+        contentFilter.filter(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
 
         filtered = true;
       }
@@ -96,5 +94,6 @@ public class JarTraverser extends AbstractTraverser
 
     getLogger().info("Replacing: " + jar.getAbsolutePath() + " with: " + tmpJar.getAbsolutePath());
     FileUtils.copyFile(tmpJar, jar);
+    FileUtils.forceDeleteOnExit(tmpJar);
   }
 }

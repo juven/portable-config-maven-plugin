@@ -5,11 +5,12 @@ import org.scalatest.{BeforeAndAfter, FunSpec}
 import org.scalatest.matchers.ShouldMatchers
 import com.juvenxu.portableconfig.ContentFilter
 import com.juvenxu.portableconfig.model.Replace
-import java.io.{StringReader, StringWriter}
+import java.io.{ByteArrayOutputStream, StringReader, StringWriter}
 
 import collection.JavaConversions._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import org.apache.commons.io.IOUtils
 
 /**
  * @author juven
@@ -73,9 +74,9 @@ class SXmlContentFilterTest extends PlexusTestCase with FunSpec with ShouldMatch
 
 
   def doFilter(input: String, replaces: List[Replace]) = {
-    val writer = new StringWriter()
-    sut.filter(new StringReader(input), writer, replaces)
-    writer.toString
+    val outputStream: ByteArrayOutputStream = new ByteArrayOutputStream
+    sut.filter(IOUtils.toInputStream(input), outputStream, replaces)
+    outputStream.toString
   }
 
 }

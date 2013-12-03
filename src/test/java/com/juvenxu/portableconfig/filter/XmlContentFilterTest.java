@@ -103,9 +103,9 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     replaces.add(new Replace(null, "//property[@name='jndiName']/@name", "newjndi"));
     String output = doFilter(input, replaces);
 
-    Assert.assertThat(output, containsString("<property name=\"newjndi\" value=\"java:jboss/TransactionManager\" />" ));
+    Assert.assertThat(output, containsString("<property name=\"newjndi\" value=\"java:jboss/TransactionManager\"/>" ));
   }
-  
+
   public void testFilteringXmlXPathAttributeWithDOCTYPE() throws Exception
   {
     String input = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -118,7 +118,7 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     		+ "</session-factory></hibernate-configuration>";
 
     List<Replace> replaces = new ArrayList<Replace>();
-    replaces.add(new Replace(null, "//property[@name='hibernate.connection.datasource']", "newdatasource"));
+    replaces.add(new Replace(null, "//property[@name='hibernate.connection.datasource']/text()", "newdatasource"));
     String output = doFilter(input, replaces);
 
     Assert.assertThat(output, containsString("<property name=\"hibernate.connection.datasource\">newdatasource</property>" ));
@@ -133,7 +133,7 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
             "</server>";
 
     List<Replace> replaces = new ArrayList<Replace>();
-    replaces.add(new Replace(null, "//host[@id='to_be_replaced']", "192.168.1.1"));
+    replaces.add(new Replace(null, "//host[@id='to_be_replaced']/text()", "192.168.1.1"));
 
 
     String output = doFilter(input, replaces);
@@ -161,7 +161,7 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
             "</web-app>\n";
 
     List<Replace> replaces = new ArrayList<Replace>();
-    replaces.add(new Replace(null, "//param-value[@id='DebugMode']", "false"));
+    replaces.add(new Replace(null, "//param-value[@id='DebugMode']/text()", "false"));
 
     String output = doFilter(input, replaces);
     Assert.assertThat(output, containsString("<param-value id=\"DebugMode\">false</param-value>" ));
@@ -180,7 +180,26 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     replaces.add(new Replace(null, "//context:property-placeholder/@local-override", "false"));
 
     String output = doFilter(input, replaces);
-    Assert.assertThat(output, containsString("<context:property-placeholder ignore-unresolvable=\"true\" local-override=\"false\""));
+    Assert.assertThat(output, containsString("<context:property-placeholder ignore-unresolvable=\"true\" local-override=\"false\" />"));
+  }
+
+  public void testFilteringXmlWithNameSpaceAndReplaceWithMultiOriginalNameSpacePrefix() throws Exception
+  {
+    String input = "<bk:bookstore xmlns:bk=\"urn:xmlns:25hoursaday-com:bookstore\">\n" +
+            " <bk:book> \n" +
+            "    <bk:title>Lord of the Rings</bk:title> \n" +
+            "    <bk:author>J.R.R. Tolkien</bk:author>\n" +
+            "    <inv:inventory status=\"in-stock\" isbn=\"0345340426\" \n" +
+            "        xmlns:inv=\"urn:xmlns:25hoursaday-com:inventory-tracking\" />\n" +
+            " </bk:book> \n" +
+            "</bk:bookstore>";
+
+
+    List<Replace> replaces = new ArrayList<Replace>();
+    replaces.add(new Replace(null, "//inv:inventory/@status", "none"));
+
+    String output = doFilter(input, replaces);
+    Assert.assertThat(output, containsString("<inv:inventory status=\"none\""));
   }
 
 }

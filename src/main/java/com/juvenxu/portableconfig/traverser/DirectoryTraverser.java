@@ -44,24 +44,20 @@ public class DirectoryTraverser extends AbstractTraverser
 
       ContentFilter contentFilter = getContentFilter(configFile.getType());
 
-      Reader reader = null;
-
-      Writer writer = null;
-
+      InputStream fileIS = new FileInputStream(file);
+      OutputStream tmpOS = new FileOutputStream(tmpTxt);
       try
       {
-        reader = new FileReader(file);
-        writer = new FileWriter(tmpTxt);
-
-        contentFilter.filter(reader, writer, configFile.getReplaces());
+        contentFilter.filter(fileIS, tmpOS, configFile.getReplaces());
       }
       finally
       {
-        IOUtils.closeQuietly(reader);
-        IOUtils.closeQuietly(writer);
+        IOUtils.closeQuietly(fileIS);
+        IOUtils.closeQuietly(tmpOS);
       }
 
       FileUtils.copyFile(tmpTxt, file);
+      FileUtils.forceDeleteOnExit(tmpTxt);
     }
   }
 }

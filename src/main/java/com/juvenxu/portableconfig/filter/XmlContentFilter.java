@@ -1,29 +1,15 @@
 package com.juvenxu.portableconfig.filter;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.util.StringUtils;
-import org.jdom2.Attribute;
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
-import org.jdom2.Namespace;
-import org.jdom2.filter.Filters;
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.input.sax.XMLReaders;
-import org.jdom2.output.Format;
-import org.jdom2.output.XMLOutputter;
-import org.jdom2.xpath.XPathExpression;
-import org.jdom2.xpath.XPathFactory;
-
 import com.juvenxu.portableconfig.ContentFilter;
 import com.juvenxu.portableconfig.model.Replace;
+import com.ximpleware.*;
+import org.apache.commons.io.IOUtils;
+import org.codehaus.plexus.component.annotations.Component;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
 
 /**
  * @author juven
@@ -41,126 +27,100 @@ public class XmlContentFilter implements ContentFilter
   }
 
   @Override
-  public void filter(Reader reader, Writer writer, List<Replace> replaces) throws IOException
+  public void filter(InputStream fileIS, OutputStream tmpOS, List<Replace> replaces) throws IOException
   {
-    Document doc = null;
-
     try
     {
-      doc = createDTDUnawareSaxBuilder().build(reader);
+      VTDGen vg = new VTDGen();
+      vg.setDoc(IOUtils.toByteArray(fileIS));
+      vg.parse(true);
+      VTDNav vn = vg.getNav();
+      AutoPilot ap = new AutoPilot(vn);
+
+      addAllNamespaces(vn, ap);
+      XMLModifier xm = new XMLModifier(vn);
+      int i;
+      for (Replace replace : replaces)
+      {
+        ap.selectXPath(replace.getXpath());
+        while ((i = ap.evalXPath()) != -1)
+        {
+          if (replace.getXpath().contains("text()"))
+          {
+            xm.updateToken(i, replace.getValue());
+          }
+          else
+          {
+            xm.updateToken(i + 1, replace.getValue());
+          }
+        }
+
+      }
+      xm.output(tmpOS);
     }
-    catch (JDOMException e)
+    catch (XPathEvalException e)
     {
-      throw new IOException("Failed to build Xml document.", e);
+      throw new IOException("Failed to XPath evaluation", e);
     }
-
-
-    for (Replace replace : replaces)
+    catch (EOFException e)
     {
-      XPathFactory xPathFactory = XPathFactory.instance();
-
-      XPathExpression xPathExpression = null;
-
-      String rootNamespaceURI = doc.getRootElement().getNamespaceURI();
-
-      if (StringUtils.isEmpty(rootNamespaceURI))
-      {
-        xPathExpression = xPathFactory.compile(replace.getXpath());
-      }
-      else if (false)
-      {
-
-      }
-      else
-      {
-        Namespace rootNamespace = Namespace.getNamespace(CUSTOMIZED_NAMESPACE_PREFIX, doc.getRootElement().getNamespaceURI());
-
-        List<Namespace> x = doc.getRootElement().getAdditionalNamespaces();
-        List<Namespace> allNS = new ArrayList<Namespace>();
-        allNS.add(rootNamespace);
-        allNS.addAll(x);
-
-        String expression = addCustomizedNamespacePrefix(CUSTOMIZED_NAMESPACE_PREFIX, replace.getXpath());
-
-        xPathExpression = xPathFactory.compile(expression, Filters.fpassthrough(), null, allNS);
-      }
-
-      for (Object obj : xPathExpression.evaluate(doc))
-      {
-        if (obj instanceof Element)
-        {
-          ((Element) obj).setText(replace.getValue());
-        }
-        else if (obj instanceof Attribute)
-        {
-          ((Attribute) obj).setValue(replace.getValue());
-        }
-        else
-        {
-          throw new IOException("Unsupported xpath result object: " + obj.getClass().toString());
-        }
-      }
+      throw new IOException("Failed to EOF", e);
+    }
+    catch (TranscodeException e)
+    {
+      throw new IOException("Failed to transcode characters ", e);
+    }
+    catch (NavException e)
+    {
+      throw new IOException("Failed in navigation phase", e);
+    }
+    catch (EncodingException e)
+    {
+      throw new IOException("Failed to parse spacial character encoding", e);
+    }
+    catch (XPathParseException e)
+    {
+      throw new IOException("Failed to the construction of XPathExpr ", e);
+    }
+    catch (EntityException e)
+    {
+      throw new IOException("Failed for any invalid entity reference during parsing", e);
+    }
+    catch (ParseException e)
+    {
+      throw new IOException("Failed to parsing XML", e);
+    }
+    catch (ModifyException e)
+    {
+      throw new IOException("Failed to modification of XML", e);
     }
 
-    XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-
-    xmlOutputter.output(doc, writer);
   }
 
-  private SAXBuilder createDTDUnawareSaxBuilder()
+  private void addAllNamespaces(VTDNav vn, AutoPilot ap) throws NavException
   {
-    SAXBuilder saxBuilder = new SAXBuilder();
-
-    // http://xerces.apache.org/xerces2-j/features.html
-    saxBuilder.setXMLReaderFactory(XMLReaders.NONVALIDATING);
-    saxBuilder.setFeature("http://xml.org/sax/features/validation", false);
-    saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
-    saxBuilder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-    return saxBuilder;
-  }
-
-  private String addCustomizedNamespacePrefix(String customizedNamespacePrefix, String expression)
-  {
-    StringBuffer result = new StringBuffer();
-
-    List<String> parts = Arrays.asList(expression.split("/"));
-
-    if ( expression.startsWith("//"))
+    String token = null;
+    String nsPrefix = null;
+    String nsUrl = null;
+    int tokenCount = vn.getTokenCount();
+    int i = vn.getCurrentIndex() + 1;
+    while (i < tokenCount)
     {
-
-
-      parts = parts.subList( 1, parts.size());
+      int type = vn.getTokenType(i);
+      // quickly skip non-xmlns attrs
+      while (type == VTDNav.TOKEN_ATTR_NAME)
+      {
+        i += 2;
+        type = vn.getTokenType(i);
+      }
+      if (type == VTDNav.TOKEN_ATTR_NS)
+      {
+        token = vn.toNormalizedString(i);
+        nsPrefix = token.substring(token.indexOf(":") + 1);
+        nsUrl = vn.toNormalizedString(i + 1);
+        ap.declareXPathNameSpace(nsPrefix, nsUrl);
+      }
+      i++;
     }
-
-    for (String part : parts)
-    {
-      result.append("/");
-
-      if ( StringUtils.isEmpty(part))
-      {
-        continue;
-      }
-
-      if ( part.startsWith("@"))
-      {
-        result.append( part);
-      }
-      else if ( part.contains(":"))
-      {
-        result.append( part);
-      }
-      else
-      {
-        result.append(customizedNamespacePrefix);
-        result.append(":");
-        result.append(part);
-      }
-    }
-
-    //System.out.println(expression);
-    //System.out.println(result.toString());
-    return result.toString();
-
-    // return expression.replaceAll("(/+)([^@/:]+)", "$1" + customizedNamespacePrefix + ":" + "$2");
   }
 }

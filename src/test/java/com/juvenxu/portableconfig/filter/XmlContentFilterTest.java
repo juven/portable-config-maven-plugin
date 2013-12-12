@@ -118,7 +118,7 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
     		+ "</session-factory></hibernate-configuration>";
 
     List<Replace> replaces = new ArrayList<Replace>();
-    replaces.add(new Replace(null, "//property[@name='hibernate.connection.datasource']/text()", "newdatasource"));
+    replaces.add(new Replace(null, "//property[@name='hibernate.connection.datasource']", "newdatasource"));
     String output = doFilter(input, replaces);
 
     Assert.assertThat(output, containsString("<property name=\"hibernate.connection.datasource\">newdatasource</property>" ));
@@ -133,7 +133,7 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
             "</server>";
 
     List<Replace> replaces = new ArrayList<Replace>();
-    replaces.add(new Replace(null, "//host[@id='to_be_replaced']/text()", "192.168.1.1"));
+    replaces.add(new Replace(null, "//host[@id='to_be_replaced']", "192.168.1.1"));
 
 
     String output = doFilter(input, replaces);
@@ -161,7 +161,7 @@ public class XmlContentFilterTest extends AbstractContentFilterTest
             "</web-app>\n";
 
     List<Replace> replaces = new ArrayList<Replace>();
-    replaces.add(new Replace(null, "//param-value[@id='DebugMode']/text()", "false"));
+    replaces.add(new Replace(null, "//param-value[@id='DebugMode']", "false"));
 
     String output = doFilter(input, replaces);
     Assert.assertThat(output, containsString("<param-value id=\"DebugMode\">false</param-value>" ));

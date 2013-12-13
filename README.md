@@ -46,7 +46,7 @@ to change the configurations _only when_ you need to.
      <plugin>
        <groupId>com.juvenxu.portable-config-maven-plugin</groupId>
        <artifactId>portable-config-maven-plugin</artifactId>
-       <version>1.1.4</version>
+       <version>1.1.5</version>
          <executions>
            <execution>
              <goals>

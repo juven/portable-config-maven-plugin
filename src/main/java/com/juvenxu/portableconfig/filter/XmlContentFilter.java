@@ -36,7 +36,7 @@ public class XmlContentFilter implements ContentFilter {
 
             for (Replace replace : replaces) {
                 autoPilot.selectXPath(replace.getXpath());
-                int i = -1;
+                int i;
                 while ((i = autoPilot.evalXPath()) != -1) {
                     if (toReplaceAttribute(replace)) {
                         xmlModifier.updateToken(i + 1, replace.getValue());

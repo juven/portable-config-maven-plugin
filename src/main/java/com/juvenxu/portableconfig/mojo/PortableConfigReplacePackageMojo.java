@@ -36,6 +36,9 @@ public class PortableConfigReplacePackageMojo extends AbstractMojo
   @Parameter(readonly = true, defaultValue = "${project.build.directory}/${project.build.finalName}.${project.packaging}")
   private File finalPackage;
 
+  @Parameter(readonly = true, defaultValue = "${project.build.directory}/classes")
+  private File classPath;
+
   @Component(role = PortableConfigEngine.class)
   private PortableConfigEngine portableConfigEngine;
 
@@ -54,6 +57,11 @@ public class PortableConfigReplacePackageMojo extends AbstractMojo
     {
       try
       {
+        // 替换 target/classes ，只适用于packaging=jar的时候
+        if (classPath.exists() && classPath.isDirectory()) {
+            getLog().info("Replacing: " + classPath.getAbsolutePath());
+            portableConfigEngine.replace(new FileDataSource(portableConfig), classPath);
+        }
         if (outputDirectory.exists() && outputDirectory.isDirectory())
         {
           getLog().info("Replacing: " + outputDirectory.getAbsolutePath());

@@ -1,46 +1,35 @@
 package com.juvenxu.portableconfig.filter;
 
-import com.juvenxu.portableconfig.ContentFilter;
-import com.juvenxu.portableconfig.model.Replace;
+import java.util.List;
+
 import org.codehaus.plexus.component.annotations.Component;
 
-import java.io.*;
-import java.util.List;
+import com.juvenxu.portableconfig.ContentFilter;
+import com.juvenxu.portableconfig.model.Replace;
 
 /**
  * @author juven
  */
 @Component(role = ContentFilter.class, hint = "shell")
-public class ShellContentFilter extends LineBasedContentFilter
-{
-  @Override
-  public boolean accept(String contentType)
-  {
-    return (".sh").equals(contentType);
-  }
+public class ShellContentFilter extends LineBasedContentFilter{
+	@Override
+	public boolean accept(String contentType){
+		return (".sh").equals(contentType);
+	}
 
-  @Override
-  protected String filterLine(String line, List<Replace> replaces)
-  {
-    for (Replace replace : replaces)
-    {
-      if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "=\"[^\"=]*\""))
-      {
-        return line.replaceAll("=\"[^\"=]*\"", "=\"" + replace.getValue() + "\"");
-      }
-
-      if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "='[^'=]*'"))
-      {
-        return line.replaceAll("='[^'=]*'", "='" + replace.getValue() + "'");
-      }
-
-      if (line.matches("^(export\\s+){0,1}" + replace.getKey() + "=[^'\"=]*"))
-      {
-        return  line.replaceAll("=[^'\"=]*", "=" + replace.getValue());
-      }
-    }
-
-    return line;
-  }
-
+	@Override
+	protected String filterLine(String line, List<Replace> replaces){
+		for(Replace replace : replaces){
+			if(line.matches("^(export\\s+){0,1}" + replace.getKey() + "=\"[^\"=]*\"")){
+				return line.replaceAll("=\"[^\"=]*\"", "=\"" + replace.getValue() + "\"");
+			}
+			if(line.matches("^(export\\s+){0,1}" + replace.getKey() + "='[^'=]*'")){
+				return line.replaceAll("='[^'=]*'", "='" + replace.getValue() + "'");
+			}
+			if(line.matches("^(export\\s+){0,1}" + replace.getKey() + "=[^'\"=]*")){
+				return line.replaceAll("=[^'\"=]*", "=" + replace.getValue());
+			}
+		}
+		return line;
+	}
 }

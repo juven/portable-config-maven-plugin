@@ -1,14 +1,14 @@
 package com.juvenxu.portableconfig;
 
-import com.juvenxu.portableconfig.model.ValuePool;
+import java.io.IOException;
 
 import javax.activation.DataSource;
-import java.io.IOException;
+
+import com.juvenxu.portableconfig.model.ValuePool;
 
 /**
  * @author juven
  */
-public interface ValuePoolSource
-{
-  ValuePool load(DataSource dataSource) throws IOException;
+public interface ValuePoolSource{
+	ValuePool load(DataSource dataSource) throws IOException;
 }

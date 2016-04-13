@@ -20,86 +20,58 @@ import java.util.List;
  * @author juven
  */
 @Component(role = PortableConfigEngine.class)
-public class DefaultPortableConfigEngine implements PortableConfigEngine
-{
-  @Requirement
-  private PortableConfigBuilder portableConfigBuilder;
+public class DefaultPortableConfigEngine implements PortableConfigEngine{
+	@Requirement
+	private PortableConfigBuilder portableConfigBuilder;
+	@Requirement(role = ContentFilter.class)
+	private List<ContentFilter> contentFilters;
+	@Requirement(role = AbstractTraverser.class, hint = "jar")
+	private AbstractTraverser jarTraverser;
+	@Requirement(role = AbstractTraverser.class, hint = "directory")
+	private AbstractTraverser directoryTraverser;
+	@Requirement(role = ValuePoolSource.class, hint = "default")
+	private ValuePoolSource valuePoolSource;
 
-  @Requirement(role = ContentFilter.class)
-  private List<ContentFilter> contentFilters;
+	@Override
+	public void replace(DataSource portableConfig, File file) throws IOException{
+		PortableConfig config = buildPortableConfig(portableConfig);
+		doReplace(config, file);
+	}
 
-  @Requirement(role = AbstractTraverser.class, hint = "jar")
-  private AbstractTraverser jarTraverser;
+	private void doReplace(PortableConfig config, File file) throws IOException{
+		if(file.isFile()){
+			jarTraverser.traverse(config, file);
+		}else{
+			directoryTraverser.traverse(config, file);
+		}
+	}
 
-  @Requirement(role = AbstractTraverser.class, hint = "directory")
-  private AbstractTraverser directoryTraverser;
+	@Override
+	public void replace(DataSource portableConfig, File file, File source) throws IOException{
+		PortableConfig config = buildPortableConfig(portableConfig);
+		ValuePool valuePool = valuePoolSource.load(new FileDataSource(source));
+		fill(config, valuePool);
+		doReplace(config, file);
+	}
 
-  @Requirement(role = ValuePoolSource.class, hint = "default")
-  private ValuePoolSource valuePoolSource;
+	private void fill(PortableConfig config, ValuePool valuePool){
+		for(ConfigFile configFile : config.getConfigFiles()){
+			for(Replace replace : configFile.getReplaces()){
+				String value = replace.getValue();
+				if(value.contains("${") && value.contains("}")){
+					StrSubstitutor strSubstitutor = new StrSubstitutor(valuePool.getValues());
+					replace.setValue(strSubstitutor.replace(value));
+				}
+			}
+		}
+	}
 
-  @Override
-  public void replace(DataSource portableConfig, File file) throws IOException
-  {
-    PortableConfig config = buildPortableConfig(portableConfig);
-
-    doReplace(config, file);
-  }
-
-  private void doReplace(PortableConfig config, File file) throws IOException
-  {
-    if (file.isFile())
-    {
-      jarTraverser.traverse(config, file);
-    }
-    else
-    {
-      directoryTraverser.traverse(config, file);
-    }
-  }
-
-  @Override
-  public void replace(DataSource portableConfig, File file, File source) throws IOException
-  {
-    PortableConfig config = buildPortableConfig(portableConfig);
-
-    ValuePool valuePool = valuePoolSource.load(new FileDataSource(source));
-
-    fill(config, valuePool);
-
-    doReplace(config, file);
-  }
-
-  private void fill(PortableConfig config, ValuePool valuePool)
-  {
-    for (ConfigFile configFile : config.getConfigFiles())
-    {
-      for (Replace replace : configFile.getReplaces())
-      {
-        String value = replace.getValue();
-
-        if (value.contains("${") && value.contains("}"))
-        {
-          StrSubstitutor strSubstitutor = new StrSubstitutor(valuePool.getValues());
-
-          replace.setValue(strSubstitutor.replace(value));
-        }
-      }
-    }
-  }
-
-  private PortableConfig buildPortableConfig(DataSource portableConfigDataSource) throws IOException
-  {
-    InputStream inputStream = portableConfigDataSource.getInputStream();
-
-    try
-    {
-      return portableConfigBuilder.build(portableConfigDataSource.getInputStream());
-    }
-    finally
-    {
-      IOUtils.closeQuietly(inputStream);
-    }
-
-  }
-
+	private PortableConfig buildPortableConfig(DataSource portableConfigDataSource) throws IOException{
+		InputStream inputStream = portableConfigDataSource.getInputStream();
+		try{
+			return portableConfigBuilder.build(portableConfigDataSource.getInputStream());
+		}finally{
+			IOUtils.closeQuietly(inputStream);
+		}
+	}
 }

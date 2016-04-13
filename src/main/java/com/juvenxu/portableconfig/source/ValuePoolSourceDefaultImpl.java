@@ -1,17 +1,20 @@
 package com.juvenxu.portableconfig.source;
 
-import com.juvenxu.portableconfig.ValuePoolSource;
-import com.juvenxu.portableconfig.model.Replace;
-import com.juvenxu.portableconfig.model.ValuePool;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.activation.DataSource;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.codehaus.plexus.component.annotations.Component;
 
-import javax.activation.DataSource;
-import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.juvenxu.portableconfig.ValuePoolSource;
+import com.juvenxu.portableconfig.model.ValuePool;
 
 /**
  * @author juven

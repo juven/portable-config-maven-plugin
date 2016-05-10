@@ -43,4 +43,8 @@ public class ShellContentFilter extends LineBasedContentFilter
     return line;
   }
 
+  @Override
+  public List<String> getReplacedEntry() {
+    return null;
+  }
 }

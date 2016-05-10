@@ -96,4 +96,9 @@ public class XmlContentFilter implements ContentFilter {
             i++;
         }
     }
+
+    @Override
+    public List<String> getReplacedEntry() {
+        return null;
+    }
 }

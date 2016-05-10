@@ -1,19 +1,21 @@
 package com.juvenxu.portableconfig.filter;
 
 import com.juvenxu.portableconfig.ContentFilter;
+import com.juvenxu.portableconfig.IReplaceRecord;
 import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.component.annotations.Component;
 
 import java.io.*;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author juven
  */
 @Component(role = ContentFilter.class, hint = "properties")
-public class PropertiesContentFilter extends LineBasedContentFilter
+public class PropertiesContentFilter extends LineBasedContentFilter implements IReplaceRecord
 {
+
+  protected  List<String> replacedEntries = new ArrayList<String>();
   @Override
   public boolean accept(String contentType)
   {
@@ -52,8 +54,9 @@ public class PropertiesContentFilter extends LineBasedContentFilter
 
     for (final Replace replace : replaces)
     {
-      if (replace.getKey().equals(key))
+      if (replace.getKey().equals(key))// find the key and replace the value
       {
+        replacedEntries.add(key);// if replaced then add a key, then upper object can get this info.
         return key + equalsMark + replace.getValue();
       }
     }
@@ -66,4 +69,8 @@ public class PropertiesContentFilter extends LineBasedContentFilter
     return line.startsWith("#") || line.startsWith("!");
   }
 
+  @Override
+  public List<String> getReplacedEntry() {
+    return replacedEntries;
+  }
 }

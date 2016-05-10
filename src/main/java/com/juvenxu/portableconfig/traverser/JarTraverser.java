@@ -30,6 +30,9 @@ public class JarTraverser extends AbstractTraverser
     JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
 
     byte[] buffer = new byte[1024];
+
+    getLogger().info("=== Starting to find the to be replaced file");
+    int configfilefoundCount = 0; // how many config file were found in this jar/war?
     while (true)
     {
       JarEntry jarEntry = jarInputStream.getNextJarEntry();
@@ -42,6 +45,8 @@ public class JarTraverser extends AbstractTraverser
       getLogger().debug(jarEntry.getName());
 
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+
 
       while (true)
       {
@@ -58,15 +63,21 @@ public class JarTraverser extends AbstractTraverser
 
       boolean filtered = false;
 
-      for (ConfigFile configFile : portableConfig.getConfigFiles())
-      {
-        if (!configFile.getPath().equals(jarEntry.getName()))
-        {
+
+
+
+
+      for (ConfigFile configFile : portableConfig.getConfigFiles()) {
+
+
+        if (!configFile.getPath().equals(jarEntry.getName())) {
           continue;
         }
 
-        if (!hasContentFilter(configFile.getType()))
-        {
+        configfilefoundCount ++;
+        getLogger().info("Found Config file : " + configFile.getPath());
+
+        if (!hasContentFilter(configFile.getType())) {
           continue;
         }
 
@@ -79,8 +90,13 @@ public class JarTraverser extends AbstractTraverser
 
         contentFilter.filter(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
 
+
         filtered = true;
       }
+
+
+
+
 
       if (!filtered)
       {
@@ -88,6 +104,14 @@ public class JarTraverser extends AbstractTraverser
         byteArrayOutputStream.writeTo(jarOutputStream);
       }
     }
+
+    //compare the found file and config file number
+    if(portableConfig.getConfigFiles().size() !=configfilefoundCount )
+      getLogger().warn("Defined config files :"  +  portableConfig.getConfigFiles().size() + " found file : " +configfilefoundCount   );
+    else
+      getLogger().info("Defined config files :"  +  portableConfig.getConfigFiles().size() + " found file : " +configfilefoundCount   );
+
+
 
     IOUtils.closeQuietly(jarInputStream);
     IOUtils.closeQuietly(jarOutputStream);

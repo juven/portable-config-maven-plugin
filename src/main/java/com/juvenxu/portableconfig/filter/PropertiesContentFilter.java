@@ -5,8 +5,8 @@ import com.juvenxu.portableconfig.IReplaceRecord;
 import com.juvenxu.portableconfig.model.Replace;
 import org.codehaus.plexus.component.annotations.Component;
 
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author juven
@@ -56,7 +56,7 @@ public class PropertiesContentFilter extends LineBasedContentFilter implements I
     {
       if (replace.getKey().equals(key))// find the key and replace the value
       {
-        replacedEntries.add(key);// if replaced then add a key, then upper object can get this info.
+        replacedEntries.add(key+"="+replace.getValue());// if replaced then add a key, then upper object can get this info.
         return key + equalsMark + replace.getValue();
       }
     }

@@ -90,6 +90,10 @@ public class JarTraverser extends AbstractTraverser
 
         contentFilter.filter(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
 
+        for(int i=0;i<contentFilter.getReplacedEntry().size();i++) {
+          getLogger().info(String.format(contentFilter.getReplacedEntry().get(i)));
+        }
+
 
         filtered = true;
       }
@@ -110,8 +114,6 @@ public class JarTraverser extends AbstractTraverser
       getLogger().warn("Defined config files :"  +  portableConfig.getConfigFiles().size() + " found file : " +configfilefoundCount   );
     else
       getLogger().info("Defined config files :"  +  portableConfig.getConfigFiles().size() + " found file : " +configfilefoundCount   );
-
-
 
     IOUtils.closeQuietly(jarInputStream);
     IOUtils.closeQuietly(jarOutputStream);

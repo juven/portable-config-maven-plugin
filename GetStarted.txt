@@ -1,0 +1,11 @@
+Config the arguments to run the Jar
+main class = com.juvenxu.portableconfig.cli.PortableConfigCli
+arguments = "E:\MyDev\2015_LIVESTOCK\portable-config-maven-plugin\src\test\resources\to_be_replaced\portableconfig-demo-1.0-SNAPSHOT.war"
+            -c
+            "E:\MyDev\2015_LIVESTOCK\portable-config-maven-plugin\src\test\resources\portable_config\replace_properties_in_a_file.xml"
+            java.util.logging.ConsoleHandler.level=FINE
+
+
+
+file to replaced = "E:\MyDev\2015_LIVESTOCK\portable-config-maven-plugin\src\test\resources\to_be_replaced\portableconfig-demo-1.0-SNAPSHOT.war"
+config file = -c "E:\MyDev\2015_LIVESTOCK\portable-config-maven-plugin\src\test\resources\portable_config\replace_properties_in_a_file.xml"

@@ -43,4 +43,9 @@ public class ConfContentFilter extends LineBasedContentFilter
 
     return line;
   }
+
+  @Override
+  public List<String> getReplacedEntry() {
+    return null;
+  }
 }

@@ -9,6 +9,8 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Component;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
@@ -23,17 +25,19 @@ public class JarTraverser extends AbstractTraverser
   @Override
   public void traverse(PortableConfig portableConfig, File jar) throws IOException
   {
-
+    List<Integer> checklength=new ArrayList<Integer>();
     JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
     File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
     getLogger().info("Tmp file: " + tmpJar.getAbsolutePath());
     JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
 
     byte[] buffer = new byte[1024];
+
+    getLogger().info("=== Starting to find the to be replaced file");
+    int configfilefoundCount = 0; // how many config file were found in this jar/war?
     while (true)
     {
       JarEntry jarEntry = jarInputStream.getNextJarEntry();
-
       if (jarEntry == null)
       {
         break;
@@ -42,6 +46,8 @@ public class JarTraverser extends AbstractTraverser
       getLogger().debug(jarEntry.getName());
 
       ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+
 
       while (true)
       {
@@ -58,29 +64,45 @@ public class JarTraverser extends AbstractTraverser
 
       boolean filtered = false;
 
-      for (ConfigFile configFile : portableConfig.getConfigFiles())
-      {
-        if (!configFile.getPath().equals(jarEntry.getName()))
-        {
+
+      int length=0;
+      for (ConfigFile configFile : portableConfig.getConfigFiles()) {
+        if (!configFile.getPath().equals(jarEntry.getName())) {
+          length++;
           continue;
         }
+        if (configFile.getPath().equals(jarEntry.getName())) {
+          checklength.add(length);
+          length++;;
+        }
 
-        if (!hasContentFilter(configFile.getType()))
-        {
+        configfilefoundCount ++;
+        getLogger().info("Found Config file : " + configFile.getPath());
+
+        if (!hasContentFilter(configFile.getType())) {
           continue;
         }
 
         getLogger().info(String.format("Replacing: %s!%s", jar.getName(), jarEntry.getName()));
 
-        JarEntry filteredJarEntry = new JarEntry(jarEntry.getName());
+        JarEntry filteredJarEntry = new JarEntry(configFile.getPath());
         jarOutputStream.putNextEntry(filteredJarEntry);
 
         ContentFilter contentFilter = getContentFilter(configFile.getType());
 
         contentFilter.filter(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()), jarOutputStream, configFile.getReplaces());
 
+        for(int i=0;i<contentFilter.getReplacedEntry().size();i++) {
+          getLogger().info(String.format(contentFilter.getReplacedEntry().get(i)));
+        }
+
+
         filtered = true;
       }
+
+
+
+
 
       if (!filtered)
       {
@@ -88,6 +110,27 @@ public class JarTraverser extends AbstractTraverser
         byteArrayOutputStream.writeTo(jarOutputStream);
       }
     }
+    List<String> checklist=new ArrayList<String>();
+    for (ConfigFile configFile : portableConfig.getConfigFiles()) {
+      checklist.add(configFile.getPath());
+    }
+    for(Integer j:checklength){
+      checklist.remove((int)j);
+    }
+  if(checklist.size()>0){
+    for (String path : checklist) {
+                 System.err.println("未找到修改数据："+path);
+    }
+    }
+
+
+    //compare the found file and config file number
+    if(portableConfig.getConfigFiles().size() !=configfilefoundCount ){
+      getLogger().warn("Defined config files :"  +  portableConfig.getConfigFiles().size() + " found file : " +configfilefoundCount   );
+
+    }
+    else
+      getLogger().info("Defined config files :"  +  portableConfig.getConfigFiles().size() + " found file : " +configfilefoundCount   );
 
     IOUtils.closeQuietly(jarInputStream);
     IOUtils.closeQuietly(jarOutputStream);

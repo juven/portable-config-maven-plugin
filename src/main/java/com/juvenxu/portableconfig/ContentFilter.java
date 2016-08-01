@@ -10,9 +10,13 @@ import java.util.List;
 /**
  * @author juven
  */
-public interface ContentFilter
+public interface ContentFilter extends  IReplaceRecord
 {
   boolean accept(String contentType);
 
   void filter(InputStream fileIS, OutputStream tmpOS, List<Replace> replaces) throws IOException;
+
+
+
 }
+

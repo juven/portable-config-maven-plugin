@@ -25,9 +25,18 @@ public class JarTraverser extends AbstractTraverser
   {
 
     JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
+    Manifest manifest = jarInputStream.getManifest();
     File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
     getLogger().info("Tmp file: " + tmpJar.getAbsolutePath());
-    JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
+    JarOutputStream jarOutputStream = null;
+    if(manifest!=null)
+    {
+        jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar), manifest);
+    }
+    else
+    {
+        jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
+    }
 
     byte[] buffer = new byte[1024];
     while (true)

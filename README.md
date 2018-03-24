@@ -163,6 +163,31 @@ become
   </server>"
   ```
 
+### .yml or yaml
+
+Properties files are most used configuration file format:
+
+  ```
+  bonecp:
+    username: root
+    password: 123456
+  ```
+
+with
+
+  ```xml
+  <replace key="bonecp.username">test</replace>
+  <replace key="bonecp.password">test_pwd</replace>
+  ```
+
+become
+
+  ```
+  bonecp:
+      username: test
+      password: test_pwd
+  ```
+
 ## FAQ
 
 __Q: I have properties file but it's extension is not .properties, how to make this plugin to recognize it?__

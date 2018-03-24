@@ -6,67 +6,57 @@ import java.util.List;
 /**
  * @author juven
  */
-public class ConfigFile
-{
-  private final String path;
+public class ConfigFile{
+	private final String path;
+	private final String type;
+	private List<Replace> replaces = new ArrayList<Replace>();
 
-  private final String type;
+	public ConfigFile(String path){
+		this(path, path.substring(path.lastIndexOf('.')));
+	}
 
-  private List<Replace> replaces = new ArrayList<Replace>();
+	public ConfigFile(String path, String type){
+		this.path = path;
+		this.type = type;
+	}
 
-  public ConfigFile(String path)
-  {
-    this(path, path.substring(path.lastIndexOf('.')));
-  }
+	public String getPath(){
+		return path;
+	}
 
-  public ConfigFile(String path, String type)
-  {
-    this.path = path;
+	public String getType(){
+		return type;
+	}
 
-    this.type = type;
-  }
+	public List<Replace> getReplaces(){
+		return replaces;
+	}
 
-  public String getPath()
-  {
-    return path;
-  }
+	public void addReplace(Replace replace){
+		this.getReplaces().add(replace);
+	}
 
-  public String getType()
-  {
-    return type;
-  }
+	@Override
+	public boolean equals(Object o){
+		if(this == o)
+			return true;
+		if(o == null || getClass() != o.getClass())
+			return false;
+		ConfigFile that = (ConfigFile) o;
+		if(!path.equals(that.path))
+			return false;
+		if(!replaces.equals(that.replaces))
+			return false;
+		if(!type.equals(that.type))
+			return false;
+		return true;
+	}
 
-  public List<Replace> getReplaces()
-  {
-    return replaces;
-  }
-
-  public void addReplace(Replace replace)
-  {
-    this.getReplaces().add(replace);
-  }
-
-  @Override
-  public boolean equals(Object o)
-  {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    ConfigFile that = (ConfigFile) o;
-
-    if (!path.equals(that.path)) return false;
-    if (!replaces.equals(that.replaces)) return false;
-    if (!type.equals(that.type)) return false;
-
-    return true;
-  }
-
-  @Override
-  public int hashCode()
-  {
-    int result = path.hashCode();
-    result = 31 * result + type.hashCode();
-    result = 31 * result + replaces.hashCode();
-    return result;
-  }
+	@Override
+	public int hashCode(){
+		int result = path.hashCode();
+		result = 31 * result + type.hashCode();
+		result = 31 * result + replaces.hashCode();
+		return result;
+	}
 }

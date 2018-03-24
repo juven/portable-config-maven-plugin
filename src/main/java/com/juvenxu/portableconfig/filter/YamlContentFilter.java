@@ -9,10 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Component;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +37,29 @@ public class YamlContentFilter implements ContentFilter {
             String replaceValue = replace.getValue();
             replace(replaceKey,replaceValue,null,initMap);
         }
-        yaml.dump(initMap,new OutputStreamWriter(tmpOS));
+
+        //输出方法1
+        //yaml.dump(initMap,new OutputStreamWriter(tmpOS));其格式化为
+        /*
+        hello2:
+          hello21: {hello211: 222, hello212: 212}
+        hello1: {hello11: ''}
+        */
+
+        //输出方法2
+        Writer writer = new OutputStreamWriter(tmpOS);
+        writer.write(yaml.dumpAsMap(initMap));
+        writer.flush();
+        //writer.close();
+        //其格式化为
+        /*
+        hello2:
+          hello21:
+            hello211: 222
+            hello212: 212
+        hello1:
+          hello11: 11
+        */
     }
 
 

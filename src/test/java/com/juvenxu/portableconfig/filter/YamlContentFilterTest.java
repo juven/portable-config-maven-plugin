@@ -3,13 +3,13 @@ package com.juvenxu.portableconfig.filter;
 import com.juvenxu.portableconfig.model.Replace;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.BufferedOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * @author june
+ * @author june, lihao
  */
 public class YamlContentFilterTest extends AbstractContentFilterTest{
 
@@ -19,36 +19,48 @@ public class YamlContentFilterTest extends AbstractContentFilterTest{
     }
 
     public void testFilter() throws Exception{
-
         String input = "";
-
-        input += "---\n";
-        input += "traits: !java.lang.String[]\n";
-        input += "  - ONE_HAND\n";
-        input += "  - 中文\n";
+        input += "#---\n";
         input += "hello2:\n";
-        input += "  hello22:\n";
-        input += "      hello3: 3220\n";
-        input += "hello: 30\n";
+        input += "  hello21:\n";
+        input += "    hello211: 222\n";
+        input += "    hello212: 212\n";
+        input += "hello1:\n" +
+                "  hello11: 11\n";
         System.out.println(input);
         System.out.println("===============================");
         List<Replace> replaces = new ArrayList<Replace>();
-        replaces.add(new Replace("traits", null, "[\"事实事实上上\",\"事实上\"]"));
-        replaces.add(new Replace("hello", null, "22230"));
-        replaces.add(new Replace("hello2.hello22.hello3", null, "322220"));
+        replaces.add(new Replace("hello1.hello11", null, "value11"));
+        replaces.add(new Replace("hello2.hello21.hello211", null, "value211"));
+        replaces.add(new Replace("hello2.hello21.hello212", null, "value212"));
         String output = doFilter(input, replaces);
         System.out.println(output);
 
     }
 
 
-    public void testDump2() {
-        Map<String, Object> data = new HashMap<String, Object>();
-        //data.put("name", "Silenthand Olleander");
-        data.put("race", "20");
-        //data.put("traits", new String[] { "ONE_HAND", "ONE_EYE" });
-        String str = new Yaml().dump(data);
-        System.out.println(str);
+    @SuppressWarnings("unchecked")
+    public void testDump2() throws Exception{
+        String input = "";
+        input += "#---\n";
+        /*input += "traits: !java.lang.String[]\n";
+        input += "  - ONE_HAND\n";
+        input += "  - 中文\n";*/
+        input += "hello2:\n";
+        input += "  hello21:\n";
+        input += "    hello211: 222\n";
+        input += "    hello212: 212\n";
+        input += "hello1:\n" +
+                "  hello11: 11\n";
+        System.out.println(input);
+        System.out.println("===============================");
+
+        BufferedOutputStream f = new BufferedOutputStream(System.out);
+        Yaml yaml = new Yaml();
+        Map<String,Object> initMap = (Map<String, Object>) yaml.load(input);
+        f.write(yaml.dumpAsMap(initMap).getBytes());
+        f.flush();
+        f.close();
     }
 
 }

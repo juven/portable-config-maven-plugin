@@ -8,10 +8,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.component.annotations.Component;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 /**
  * @author juven
@@ -25,10 +31,15 @@ public class JarTraverser extends AbstractTraverser
   {
 
     JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
+    Manifest manifest = jarInputStream.getManifest();
     File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
     getLogger().info("Tmp file: " + tmpJar.getAbsolutePath());
-    JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
-
+    JarOutputStream jarOutputStream;
+    if (manifest != null) {
+      jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar), manifest);
+    } else {
+      jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
+    }
     byte[] buffer = new byte[1024];
     while (true)
     {

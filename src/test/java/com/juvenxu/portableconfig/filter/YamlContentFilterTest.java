@@ -23,7 +23,7 @@ public class YamlContentFilterTest extends AbstractContentFilterTest{
         String input = "";
 
         input += "---\n";
-        input += "traits: !java.lang.String[]\n";
+        input += "traits:\n";
         input += "  - ONE_HAND\n";
         input += "  - 中文\n";
         input += "hello2:\n";

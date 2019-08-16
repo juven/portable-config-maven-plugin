@@ -9,7 +9,7 @@
 
     <groupId>com.juvenxu.portable-config-maven-plugin</groupId>
     <artifactId>portable-config-maven-plugin</artifactId>
-    <version>1.1.6-SNAPSHOT</version>
+    <version>1.1.60-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Portable Config Maven Plugin</name>
@@ -244,4 +244,14 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>qdkl-snapshots</id>
+            <url>http://nexus.qdkl.cn/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>qdkl-releases</id>
+            <url>http://nexus.qdkl.cn/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
 </project>

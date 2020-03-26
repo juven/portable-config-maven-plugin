@@ -170,6 +170,58 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.codehaus.plexus
+                                        </groupId>
+                                        <artifactId>
+                                            plexus-component-metadata
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.5.5,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>
+                                                generate-test-metadata
+                                            </goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.scala-tools
+                                        </groupId>
+                                        <artifactId>
+                                            maven-scala-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [2.15.2,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>compile</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -230,5 +282,19 @@
             </plugin>
         </plugins>
     </build>
+    
+    <distributionManagement>
+        <repository>
+            <id>EBD_Release</id>
+            <name>cqpgx-releases</name>
+            <url>http://172.19.20.5:8082/repository/maven-releases/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>EBD_Develop</id>
+            <name>cqpgx-snapshots</name>
+            <url>http://172.19.20.5:8082/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

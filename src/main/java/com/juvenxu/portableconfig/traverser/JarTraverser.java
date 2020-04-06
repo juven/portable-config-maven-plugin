@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 /**
  * @author juven
@@ -27,7 +28,16 @@ public class JarTraverser extends AbstractTraverser
     JarInputStream jarInputStream = new JarInputStream(new FileInputStream(jar));
     File tmpJar = File.createTempFile(Long.toString(System.nanoTime()), ".jar");
     getLogger().info("Tmp file: " + tmpJar.getAbsolutePath());
-    JarOutputStream jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));
+    // 从源文件从取出manifest文件
+    Manifest mf = jarInputStream.getManifest();
+    JarOutputStream jarOutputStream = null;
+    if(mf!=null)
+    {
+    	// 如果manifest不为空，则创建输出jar包是放入，避免替换操作之后mf文件丢失的问题
+    	jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar), mf);
+    } else {
+    	jarOutputStream = new JarOutputStream(new FileOutputStream(tmpJar));    	
+    }
 
     byte[] buffer = new byte[1024];
     while (true)

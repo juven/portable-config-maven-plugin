@@ -247,11 +247,11 @@
     <distributionManagement>
         <snapshotRepository>
             <id>qdkl-snapshots</id>
-            <url>http://nexus.qdkl.cn/content/repositories/snapshots/</url>
+            <url>https://nexus.qdkl.cn/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>qdkl-releases</id>
-            <url>http://nexus.qdkl.cn/content/repositories/releases/</url>
+            <url>https://nexus.qdkl.cn/content/repositories/releases/</url>
         </repository>
     </distributionManagement>
 </project>
